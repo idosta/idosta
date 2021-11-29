@@ -9,15 +9,10 @@ def QME(tl,v,epsilon,beta,U):
 
     FI=[]
     for a in range (2):
-        ga = 1
-        tl = tl
-        tm = np.sqrt(tl * ga)
-        v = v * ga
-        miul = -v / 2
-        miur = v / 2
-        miu = (miul, miur)
-        U = U * ga
-        beta = beta / ga
+        tm = np.sqrt(tl)
+        miu = (v / 2, -v / 2)
+        U = U
+        beta = beta
         eps_m = -U / 2 + epsilon
         # E is the energy of the dot=(00,up0,down0,updown)
         E = (0, eps_m, eps_m, 2 * eps_m + U)
@@ -30,10 +25,11 @@ def QME(tl,v,epsilon,beta,U):
                     elc[i, j] = 0
 
         def gamma(tl, tm, eps_l, w):
-            a = 0
-            if abs(w - eps_l) < 2 * tl:
-                a = ((tm ** 2) / (2 * tl ** 2)) * np.sqrt(4 * tl ** 2 - (w - eps_l) ** 2)
-            return a
+            temp = 0
+            if abs(w - eps_l) < (2 * tl):
+                #temp=ga
+                temp = ((tm ** 2) / (2 * tl ** 2)) * np.sqrt(4 * tl ** 2 - (w - eps_l) ** 2)
+            return temp
 
         # def sketch_gamma(tl, tm, miu):
         #     for e in (miu):
@@ -55,10 +51,10 @@ def QME(tl,v,epsilon,beta,U):
         # sketch_gamma(tl, tm, miu)
 
         def f(miu, beta, w):
-            if w > 0:
+            if w>0:
                 return (1 / (np.exp(beta * (w - miu)) + 1))
             else:
-                return (1 - (1 / (np.exp(beta * (-w - miu)) + 1)))
+                return (1-(1 / (np.exp(beta * (-w - miu)) + 1)))
 
         R = []
         R.append(np.zeros((4, 4)))
@@ -66,7 +62,7 @@ def QME(tl,v,epsilon,beta,U):
         for l in range(2):
             for i in range(4):
                 for j in range(4):
-                    R[l][i, j] = abs(elc[i, j]) * gamma(tl, tm, miu[l], (E[i] - E[j])) * f(miu[l], beta,
+                    R[l][i, j] = abs(elc[i, j]) * gamma(tl, tm, miu[l], elc[i,j]*(E[i] - E[j])) * f(miu[l], beta,
                                                                                            (E[i] - E[j]))
 
         m = np.copy(R)
@@ -83,7 +79,7 @@ def QME(tl,v,epsilon,beta,U):
             q = np.zeros((4, 4))
             for i in range(4):
                 for j in range(4):
-                    q[i, j] = np.exp(x * abs(elc[i, j]))
+                    q[i, j] = np.exp(x * (elc[i, j]))#can count total
             return (q)
 
         def p(x, t, m, p0, a):
@@ -117,29 +113,36 @@ def QME(tl,v,epsilon,beta,U):
         C.append(0)
         I = []
         I.append(0)
-        dt = 0.0001
-        for i in range(1000):
+        dt = 1
+        for i in range(10000):
             t.append(t[len(t) - 1] + dt)
-            C.append(C_cal(j, m, p0, 0))
-            I.append(C[len(C) - 1] / j)
-        while (C[len(C) - 1] - C[len(C) - 2]) > 0.0001 * (C[len(C) - 10] - C[len(C) - 11]):
-            t.append(t[len(t) - 1] + dt)
-            C.append(C_cal(j, m, p0, 0))
-            I.append(C[len(C) - 1] / j)
+            C.append(C_cal(t[len(t) - 1], m, p0, 0))
+            I.append(C[len(C) - 1] / t[len(t) - 1])
+        if I[len(I) - 1] > 0:
+            while (I[len(C) - 1] - I[len(C) - 2]) > 0.001 * (I[len(C) - 10] - I[len(C) - 11]):
+                t.append(t[len(t) - 1] + dt)
+                C.append(C_cal(t[len(t) - 1], m, p0, 0))
+                I.append(C[len(C) - 1] / t[len(t) - 1])
+
 
         FI.append(I[len(C) - 1])
-    return (np.mean(FI),abs(FI[1]-FI[0]))
+    return ((FI[1]+FI[0])/2,abs(FI[1]-FI[0]))
 
 data=[]
 beta=1
 U=40
-tlrange=[30]
-for v in range (-100,100,1):
-    for epsilon in range (-100,100,1):
+tlrange=[50]
+T=0
+for v in range (-300,320,20):
+    for epsilon in range (-100,120,20):
         for tl in tlrange:
             I=QME(tl, v, epsilon, beta, U)
             data.append([tl,v,epsilon,beta,U,I[0],I[1]])
+            print(I)
+            T=T+1
+            print(T)
+
 
 df = pd.DataFrame(data,columns=["tl","v","epsilon","beta","U","I","dI"])
-df.to_csv('25112021.csv')
+df.to_csv('29112021.csv')
 
