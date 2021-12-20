@@ -6,18 +6,18 @@ from numpy import linalg as la
 # dot state description (0, down, up, 1)
 # physical parameters
 
-ga = 1
-ec = 50 * ga
-nu = 1 / ga
-beta = 1 / ga
-V = 20 * ga
+ga = 1.0
+ec = 50.0 * ga
+nu = 1.0 / ga
+beta = 1.0 / ga
+V = 40.0 * ga
 miu = array([-V / 2, V / 2])  # 0'th place for left and 1 for right lead
-U = 40 * ga
+U = 25.0 * ga
 gate = 0
 epsilon0 = -U / 2 + gate * ga
 E = (0, epsilon0, epsilon0, 2 * epsilon0 + U)
 lamb = 0
-t_max = 10  # maximal time
+t_max = 5.0  # maximal time
 
 # numerical parameters
 Nx = 100  # number of points for hybridization integral
@@ -49,7 +49,7 @@ def hyb_lesser(mu):
     temp = zeros(N, complex)
     for t_hl in range(N):
         x = linspace(-nec, nec, Nx)
-        y = exp(1j * x * times[t_hl]) * gamma(x) * f(x, mu) / np.pi
+        y = exp(1j * x * times[t_hl]) * gamma(x) * f(x, mu) / pi
         temp[t_hl] = trapz(y, x)
     return temp
 
@@ -61,7 +61,7 @@ def hyb_greater(mu):
     temp = zeros(N, complex)
     for t_hg in range(N):
         x = linspace(-nec, nec, Nx)
-        y = exp(-1j * x * t_hg) * gamma(x) * (1 - f(x, mu)) / np.pi
+        y = exp(-1j * x * times[t_hg]) * gamma(x) * (1 - f(x, mu)) / pi
         temp[t_hg] = trapz(y, x)
     return temp
 
@@ -73,10 +73,14 @@ def d_op(spin, role, final_state, initial_state):  # 0=spin down 1=spin up, 0=an
     temp = 0
     if spin == 0:
         if role == 0:
-            if final_state == 0 and initial_state == 1 or final_state == 1 and initial_state == 3:
+            if final_state == 0 and initial_state == 1:
+                temp = 1
+            if final_state == 1 and initial_state == 3:
                 temp = 1
         if role == 1:
-            if initial_state == 0 and final_state == 1 or initial_state == 1 and final_state == 3:
+            if initial_state == 0 and final_state == 1:
+                temp = 1
+            if initial_state == 1 and final_state == 3:
                 temp = 1
     if spin == 1:
         if role == 0:
