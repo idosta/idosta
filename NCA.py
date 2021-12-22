@@ -45,9 +45,9 @@ def f(energy, mu):
 def hyb_lesser(mu):
     temp = zeros(N, complex)
     for t_hl in range(N):
-        x = linspace(-nec, nec, Nx)
-        y = exp(-1j * x * times[t_hl]) * gamma(x) * f(x, mu) / pi
-        temp[t_hl] = trapz(y, x)
+        x_hl = linspace(-nec, nec, Nx)
+        y = exp(-1j * x_hl * times[t_hl]) * gamma(x_hl) * f(x_hl, mu) / pi
+        temp[t_hl] = trapz(y, x_hl)
     return temp
 
 
@@ -57,9 +57,9 @@ hl = array([hyb_lesser(miu[0]), hyb_lesser(miu[1])])
 def hyb_greater(mu):
     temp = zeros(N, complex)
     for t_hg in range(N):
-        x = linspace(-nec, nec, Nx)
-        y = exp(1j * x * times[t_hg]) * gamma(-x) * (1 - f(x, mu)) / pi
-        temp[t_hg] = trapz(y, x)
+        x_hg = linspace(-nec, nec, Nx)
+        y = exp(1j * x_hg * times[t_hg]) * gamma(-x_hg) * (1 - f(x_hg, mu)) / pi
+        temp[t_hg] = trapz(y, x_hg)
     return temp
 
 
