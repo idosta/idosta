@@ -207,6 +207,7 @@ while delta_K > d_dyson:
     K = update_vertex(K_old, K0, G)
     delta_K = amax(K_old - K)
     C += 1
+    print(".")
 print("NCA vertex function Converged within", d_dyson, "after", C, "iterations.")
 
 P = zeros((4, 4, N), complex)
