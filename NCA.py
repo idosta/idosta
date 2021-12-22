@@ -218,7 +218,7 @@ for i in range(4):
         df2.columns = ["P{}{}".format(i, j)]
         df2.insert(0, "time", times)
         df2.to_csv('/home/ido/NCA/temp_results/P{}_{}.csv'.format(i, j))
-
+d
 # calculate partition function
 Z = []
 for jt in range(N):
