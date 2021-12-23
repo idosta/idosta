@@ -10,7 +10,7 @@ nu = 1.0 / ga
 beta = 1.0 / ga
 V = 40.0 * ga
 miu = array([V / 2, -V / 2])  # 0'th place for left and 1 for right lead
-U = 5.0 * ga
+U = 5 * ga
 gate = 0
 epsilon0 = -U / 2 + gate * ga
 E = (0, epsilon0, epsilon0, 2 * epsilon0 + U)
@@ -27,13 +27,13 @@ times = linspace(0, t_max, N)
 
 
 # define mathematical functions
-def fftintegral(x, y):
+def fft_integral(x, y):
     return (fftconvolve(x, y)[:len(x)]-0.5 * (x[:] * y[0] + x[0] * y[:])) * dt
 
 
 def integral_green(bare_green, old_green, self_energy):
-    total = fftintegral(bare_green, self_energy)
-    return fftintegral(total, old_green)
+    total = fft_integral(bare_green, self_energy)
+    return fft_integral(total, old_green)
 
 
 def gamma(energy):
@@ -72,14 +72,10 @@ def d_op(spin, role, final_state, initial_state):  # 0=spin down 1=spin up, 0=an
     temp = 0
     if spin == 0:
         if role == 0:
-            if final_state == 0 and initial_state == 1:
-                temp = 1
-            if final_state == 1 and initial_state == 3:
+            if final_state == 0 and initial_state == 1 or final_state == 1 and initial_state == 3:
                 temp = 1
         if role == 1:
-            if initial_state == 0 and final_state == 1:
-                temp = 1
-            if initial_state == 1 and final_state == 3:
+            if initial_state == 0 and final_state == 1 or initial_state == 1 and final_state == 3:
                 temp = 1
     if spin == 1:
         if role == 0:
@@ -92,14 +88,12 @@ def d_op(spin, role, final_state, initial_state):  # 0=spin down 1=spin up, 0=an
 
 
 def cross_branch_hyb(down_index, up_index, t_cbh):
-    temp = 0
+    tempo = 0
     for spin in [0, 1]:
         for lead in [0, 1]:
-            temp = temp + (
-                    hl[lead, t_cbh] * d_op(spin, 0, down_index, up_index) * d_op(spin, 1, up_index, down_index)
-                    * exp(-1j * lamb * times[t_cbh]) + hg[lead, t_cbh] * d_op(spin, 1, down_index, up_index) *
-                    d_op(spin, 0, up_index, down_index)) * exp(1j * lamb * times[t_cbh])
-    return temp
+            tempo = tempo + hl[lead, t_cbh] * d_op(spin, 0, down_index, up_index) * exp(-1j * lamb * times[t_cbh]) +\
+                      hg[lead, t_cbh] * d_op(spin, 1, down_index, up_index) * exp(1j * lamb * times[t_cbh])
+    return tempo
 
 
 CBH = zeros((4, 4, N, N), complex)
@@ -128,10 +122,8 @@ def update_self_energy(number_of_times, green):
             for spin in [0, 1]:
                 for lead in [0, 1]:
                     for beta_site in range(4):
-                        temp[site, t_se] += (hl[lead, t_se] * d_op(spin, 0, site, beta_site) *
-                                             d_op(spin, 1, beta_site, site) + hg[lead, t_se] *
-                                             d_op(spin, 1, site, beta_site) *
-                                             d_op(spin, 0, beta_site, site)) * green[beta_site, t_se]
+                        temp[site, t_se] += (hl[lead, t_se] * d_op(spin, 0, site, beta_site) + hg[lead, t_se] *
+                                             d_op(spin, 1, site, beta_site)) * green[beta_site, t_se]
     return temp
 
 
@@ -175,9 +167,9 @@ def integrate_vertex(a, b, green, old_vertex):
     for at in range(4):
         multi[b] += old_vertex[a, at, :, :] * CBH[at, b, :, :]
     for t_inner in range(N):
-        conv_in[:, t_inner] = fftintegral(multi[b, :, t_inner], conj(green[b, :]))
+        conv_in[:, t_inner] = fft_integral(multi[b, :, t_inner], conj(green[b, :]))
     for t_outer in range(N):
-        integral[:, t_outer] = fftintegral(green[b, :], conv_in[:, t_outer])
+        integral[:, t_outer] = fft_integral(green[b, :], conv_in[:, t_outer])
     return integral
 
 
@@ -211,7 +203,7 @@ P = zeros((4, 4, N), complex)
 for i in range(4):
     for j in range(4):
         for tn in range(N):
-            P[i, j, tn] = K[i, j, tn, tn]
+            P[i, j, tn] = K[i, j, tn, 0]
         savetxt("/home/ido/NCA/temp_results/P_ido" + str(i) + str(j) + ".out", c_[times, P[i, j, :].real])
 
 # calculate partition function
