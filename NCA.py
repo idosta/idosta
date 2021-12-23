@@ -153,16 +153,11 @@ while delta_G > d_dyson:
     delta_G = amax(G - G_old)
     C += 1
     print(".")
-df1 = pd.DataFrame(G.T)
-df1.columns = ["G0", "G1", "G2", "G3"]
-df1.insert(0, "time", times)
-df1.to_csv('/home/ido/NCA/temp_results/G.csv')
+for s in range(4):
+    savetxt("/home/ido/NCA/temp_results/G_ido" + str(s) + ".out",
+            c_[times, G[s, :].real, G[s, :].imag])
 print("NCA green function Converged within", d_dyson, "after", C, "iterations.")
-plt.plot(times, G[0, :].real)
-plt.plot(times, G[1, :].real)
-plt.plot(times, G[2, :].real)
-plt.plot(times, G[3, :].real)
-plt.show()
+
 #  calculate the vertex function K
 
 
@@ -215,10 +210,7 @@ for i in range(4):
     for j in range(4):
         for tn in range(N):
             P[i, j, tn] = K[i, j, tn, tn]
-        df2 = pd.DataFrame(P[i, j, :].T)
-        df2.columns = ["P{}{}".format(i, j)]
-        df2.insert(0, "time", times)
-        df2.to_csv('/home/ido/NCA/temp_results/P{}_{}.csv'.format(i, j))
+        savetxt("/home/ido/NCA/temp_results/P_ido" + str(i) + str(j) + ".out", c_[times, P[i, j, :].real])
 
 # calculate partition function
 Z = []
