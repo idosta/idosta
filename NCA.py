@@ -1,6 +1,4 @@
-import pandas as pd
 from numpy import *
-import matplotlib.pyplot as plt
 from scipy.signal import fftconvolve
 
 # dot state description (0, down, up, 1)
@@ -11,7 +9,7 @@ ec = 50.0 * ga
 nu = 1.0 / ga
 beta = 1.0 / ga
 V = 40.0 * ga
-miu = array([-V / 2, V / 2])  # 0'th place for left and 1 for right lead
+miu = array([V / 2, -V / 2])  # 0'th place for left and 1 for right lead
 U = 5.0 * ga
 gate = 0
 epsilon0 = -U / 2 + gate * ga
@@ -20,18 +18,22 @@ lamb = 0
 t_max = 5.0  # maximal time
 
 # numerical parameters
-Nx = 10000  # number of points for hybridization integral
-nec = 100  # limit for the hyb integral function
-d_dyson = 0.0000000001
+Nx = 1000  # number of points for hybridization integral
+nec = 10  # limit for the hyb integral function
+d_dyson = 0.00000000001
 N = 1001  # number of time points
 dt = t_max / (N-1)
 times = linspace(0, t_max, N)
 
 
 # define mathematical functions
+def fftintegral(x, y):
+    return (fftconvolve(x, y)[:len(x)]-0.5 * (x[:] * y[0] + x[0] * y[:])) * dt
+
+
 def integral_green(bare_green, old_green, self_energy):
-    total = fftconvolve(bare_green, self_energy)[:N] * dt
-    return fftconvolve(total, old_green)[:N] * dt
+    total = fftintegral(bare_green, self_energy)
+    return fftintegral(total, old_green)
 
 
 def gamma(energy):
@@ -144,7 +146,7 @@ for t in range(N):
 G = copy(G0)
 SE = update_self_energy(N, G)
 delta_G = d_dyson + 1
-# start iterations to calculate G (green function), SE (self energy)
+print("start iterations to calculate G (green function), SE (self energy)")
 C = 0
 while delta_G > d_dyson:
     G_old = copy(G)
@@ -173,9 +175,9 @@ def integrate_vertex(a, b, green, old_vertex):
     for at in range(4):
         multi[b] += old_vertex[a, at, :, :] * CBH[at, b, :, :]
     for t_inner in range(N):
-        conv_in[:, t_inner] = fftconvolve(multi[b, :, t_inner], conj(green[b, :]))[:N] * dt
+        conv_in[:, t_inner] = fftintegral(multi[b, :, t_inner], conj(green[b, :]))
     for t_outer in range(N):
-        integral[:, t_outer] = fftconvolve(green[b, :], conv_in[:, t_outer])[:N] * dt
+        integral[:, t_outer] = fftintegral(green[b, :], conv_in[:, t_outer])
     return integral
 
 
