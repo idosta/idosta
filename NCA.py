@@ -1,5 +1,7 @@
 from numpy import *
+from pylab import *
 from scipy.signal import fftconvolve
+from scipy.signal import convolve
 
 # dot state description (0, down, up, 1)
 # physical parameters
@@ -16,24 +18,48 @@ epsilon0 = -U / 2 + gate * ga
 E = (0, epsilon0, epsilon0, 2 * epsilon0 + U)
 lamb = 0
 t_max = 5.0  # maximal time
-
 # numerical parameters
 Nx = 1000  # number of points for hybridization integral
 nec = 10  # limit for the hyb integral function
 d_dyson = 0.00000000001
-N = 1001  # number of time points
-dt = t_max / (N-1)
-times = linspace(0, t_max, N)
+N = 1000  # number of time points
+dt = t_max / N
+times = arange(0, t_max, dt)
 
-
+print(times)
 # define mathematical functions
+
+
 def fft_integral(x, y):
-    return (fftconvolve(x, y)[:len(x)]-0.5 * (x[:] * y[0] + x[0] * y[:])) * dt
+    return ((fftconvolve(sym(x), sym(y))[:len(x)]) * dt)[:N]
+
+
+def conv(x, y):
+    return conv(x, y) * dt
+
+
+def sym(x):
+    X = zeros(2 * len(x), complex)
+    for ism in range(2 * len(x)):
+        if ism < len(x):
+            X[ism] = x[ism]
+        if ism >= len(x):
+            X[i] = x[2 * len(x) - ism - 1]
+    return X
+
+
+def t_g_integral(bare_green, old_green, self_energy):
+    total = 0
+    for dt1 in range(0, N):
+        for dt2 in range(1, dt1):
+            total += bare_green[N - 1 - dt1] * self_energy[dt1 - dt2] * old_green[dt2]
+    return total * dt ** 2
 
 
 def integral_green(bare_green, old_green, self_energy):
-    total = fft_integral(bare_green, self_energy)
-    return fft_integral(total, old_green)
+    total1 = fft_integral(self_energy, bare_green)
+    total2 = fft_integral(self_energy, old_green)
+    return 0.5 * (fft_integral(old_green, total1) + fft_integral(bare_green, total2))
 
 
 def gamma(energy):
@@ -104,8 +130,8 @@ for down in range(4):
                 CBH[down, up, it, ft] = cross_branch_hyb(down, up, it - ft)
 
 
-def g(time, site):  # t for time and j for the site number in the dot
-    return exp(-1j * E[site] * time)
+def g(tim, site):  # t for time and j for the site number in the dot
+    return exp(-1j * E[site] * tim)
 
 
 def update_green(self_energy, old_green, bare_green):
@@ -144,7 +170,7 @@ while delta_G > d_dyson:
     G_old = copy(G)
     G = update_green(SE, G_old, G0)
     SE = update_self_energy(N, G)
-    delta_G = amax(G - G_old)
+    delta_G = amax(abs(G - G_old))
     C += 1
     print(".")
 for s in range(4):
@@ -194,7 +220,7 @@ C = 0
 while delta_K > d_dyson:
     K_old = copy(K)
     K = update_vertex(K_old, K0, G)
-    delta_K = amax(K_old - K)
+    delta_K = amax(abs(K_old - K))
     C += 1
     print(".")
 print("NCA vertex function Converged within", d_dyson, "after", C, "iterations.")
