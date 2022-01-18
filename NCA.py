@@ -1,7 +1,7 @@
 from numpy import *
-from pylab import *
 from scipy.signal import fftconvolve
-from scipy.signal import convolve
+from scipy.fftpack import fft, ifft, fftshift, ifftshift
+import pandas as pd
 
 # dot state description (0, down, up, 1)
 # physical parameters
@@ -18,48 +18,27 @@ epsilon0 = -U / 2 + gate * ga
 E = (0, epsilon0, epsilon0, 2 * epsilon0 + U)
 lamb = 0
 t_max = 5.0  # maximal time
+
 # numerical parameters
-Nx = 1000  # number of points for hybridization integral
-nec = 10  # limit for the hyb integral function
+N = 1001  # number of time points
+dt = t_max / (N - 1)
+times = linspace(0, t_max, N)
+cutoff_factor = 5.0
+dw = 0.001
+w = linspace(-cutoff_factor * ec, cutoff_factor * ec, int(2 * cutoff_factor * ec / dw) + 1)
 d_dyson = 0.00000000001
-N = 1000  # number of time points
-dt = t_max / N
-times = arange(0, t_max, dt)
 
-print(times)
+
 # define mathematical functions
-
-
 def fft_integral(x, y):
-    return ((fftconvolve(sym(x), sym(y))[:len(x)]) * dt)[:N]
+    temp = (fftconvolve(x, y)[:len(x)] - 0.5 * (x[:] * y[0] + x[0] * y[:])) * dt
+    temp[(len(x) + 1):] = 0
+    return temp
 
 
-def conv(x, y):
-    return conv(x, y) * dt
-
-
-def sym(x):
-    X = zeros(2 * len(x), complex)
-    for ism in range(2 * len(x)):
-        if ism < len(x):
-            X[ism] = x[ism]
-        if ism >= len(x):
-            X[i] = x[2 * len(x) - ism - 1]
-    return X
-
-
-def t_g_integral(bare_green, old_green, self_energy):
-    total = 0
-    for dt1 in range(0, N):
-        for dt2 in range(1, dt1):
-            total += bare_green[N - 1 - dt1] * self_energy[dt1 - dt2] * old_green[dt2]
-    return total * dt ** 2
-
-
-def integral_green(bare_green, old_green, self_energy):
-    total1 = fft_integral(self_energy, bare_green)
-    total2 = fft_integral(self_energy, old_green)
-    return 0.5 * (fft_integral(old_green, total1) + fft_integral(bare_green, total2))
+def integral_green(bare_green, self_energy, old_green):
+    total23, total21 = fft_integral(self_energy, old_green), fft_integral(self_energy, bare_green)
+    return 0.5 * (fft_integral(bare_green, total23) + fft_integral(old_green, total21))
 
 
 def gamma(energy):
@@ -70,28 +49,24 @@ def f(energy, mu):
     return 1 / (1 + exp(beta * (energy - mu)))
 
 
-def hyb_lesser(mu):
-    temp = zeros(N, complex)
-    for t_hl in range(N):
-        x_hl = linspace(-nec, nec, Nx)
-        y = exp(-1j * x_hl * times[t_hl]) * gamma(x_hl) * f(x_hl, mu) / pi
-        temp[t_hl] = trapz(y, x_hl)
-    return temp
+delta_l_energy = [-1j * gamma(w) * f(w, miu[0]), -1j * gamma(w) * f(w, miu[1])]
+delta_g_energy = [-1j * gamma(w) * (1 - f(w, miu[0])), -1j * gamma(w) * (1 - f(w, miu[1]))]
+
+delta_l_temp = [ifftshift(fft(fftshift(delta_l_energy[0]))) * dw / pi,
+                ifftshift(fft(fftshift(delta_l_energy[1]))) * dw / pi]
+delta_g_temp = [ifftshift(fft(fftshift(delta_g_energy[0]))) * dw / pi,
+                ifftshift(fft(fftshift(delta_g_energy[1]))) * dw / pi]
 
 
-hl = array([hyb_lesser(miu[0]), hyb_lesser(miu[1])])
+def time_to_fftind(t):
+    return int(cutoff_factor * ec / dw + round(t * cutoff_factor * ec / pi))
 
 
-def hyb_greater(mu):
-    temp = zeros(N, complex)
-    for t_hg in range(N):
-        x_hg = linspace(-nec, nec, Nx)
-        y = exp(1j * x_hg * times[t_hg]) * gamma(-x_hg) * (1 - f(x_hg, mu)) / pi
-        temp[t_hg] = trapz(y, x_hg)
-    return temp
-
-
-hg = array([hyb_greater(miu[0]), hyb_greater(miu[1])])
+hl = zeros(N, complex)
+hg = zeros(N, complex)
+for i in range(N):
+    hl[i] = delta_l_temp[0][time_to_fftind(times[i])] + delta_l_temp[1][time_to_fftind(times[i])]
+    hg[i] = delta_g_temp[0][time_to_fftind(times[i])] + delta_g_temp[1][time_to_fftind(times[i])]
 
 
 def d_op(spin, role, final_state, initial_state):  # 0=spin down 1=spin up, 0=annihilation 1=creation
@@ -116,40 +91,40 @@ def d_op(spin, role, final_state, initial_state):  # 0=spin down 1=spin up, 0=an
 def cross_branch_hyb(down_index, up_index, t_cbh):
     tempo = 0
     for spin in [0, 1]:
-        for lead in [0, 1]:
-            tempo = tempo + hl[lead, t_cbh] * d_op(spin, 0, down_index, up_index) * exp(-1j * lamb * times[t_cbh]) +\
-                      hg[lead, t_cbh] * d_op(spin, 1, down_index, up_index) * exp(1j * lamb * times[t_cbh])
+        tempo = tempo - 1j * hl[t_cbh] * d_op(spin, 0, down_index, up_index) * exp(-1j * lamb * times[t_cbh]) + \
+                1j * hg[t_cbh] * d_op(spin, 1, down_index, up_index) * exp(1j * lamb * times[t_cbh])
     return tempo
 
 
 CBH = zeros((4, 4, N, N), complex)
+P = zeros((4, 4, N), complex)
 for down in range(4):
     for up in range(4):
+        for dif in range(-N, N):  # must fix negative times
+            P[down, up, dif] = cross_branch_hyb(down, up, dif)
         for it in range(N):
             for ft in range(N):
-                CBH[down, up, it, ft] = cross_branch_hyb(down, up, it - ft)
+                CBH[down, up, it, ft] = P[down, up, it - ft]
 
 
-def g(tim, site):  # t for time and j for the site number in the dot
-    return exp(-1j * E[site] * tim)
+def g(time, site):  # t for time and j for the site number in the dot
+    return exp(-1j * E[site] * time)
 
 
 def update_green(self_energy, old_green, bare_green):
     temp = copy(bare_green)
     for site in range(4):
-        temp[site, :] -= integral_green(bare_green[site, :], old_green[site, :], self_energy[site, :])
+        temp[site, :] += integral_green(bare_green[site, :], self_energy[site, :], old_green[site, :])
     return temp
 
 
 def update_self_energy(number_of_times, green):
     temp = zeros((4, number_of_times), complex)
-    for site in range(4):
-        for t_se in range(number_of_times):
-            for spin in [0, 1]:
-                for lead in [0, 1]:
-                    for beta_site in range(4):
-                        temp[site, t_se] += (hl[lead, t_se] * d_op(spin, 0, site, beta_site) + hg[lead, t_se] *
-                                             d_op(spin, 1, site, beta_site)) * green[beta_site, t_se]
+    for t_se in range(number_of_times):
+        temp[0, t_se] = -1j * hl[t_se] * (green[1, t_se] + green[2, t_se])
+        temp[1, t_se] = -1j * hg[t_se] * green[0, t_se] - 1j * hl[t_se] * green[3, t_se]
+        temp[2, t_se] = -1j * hg[t_se] * green[0, t_se] - 1j * hl[t_se] * green[3, t_se]
+        temp[3, t_se] = -1j * hg[t_se] * (green[1, t_se] + green[2, t_se])
     return temp
 
 
@@ -170,13 +145,14 @@ while delta_G > d_dyson:
     G_old = copy(G)
     G = update_green(SE, G_old, G0)
     SE = update_self_energy(N, G)
-    delta_G = amax(abs(G - G_old))
+    delta_G = amax(G - G_old)
     C += 1
     print(".")
 for s in range(4):
     savetxt("/home/ido/NCA/temp_results/G_ido" + str(s) + ".out",
             c_[times, G[s, :].real, G[s, :].imag])
 print("NCA green function Converged within", d_dyson, "after", C, "iterations.")
+
 
 #  calculate the vertex function K
 
@@ -220,7 +196,7 @@ C = 0
 while delta_K > d_dyson:
     K_old = copy(K)
     K = update_vertex(K_old, K0, G)
-    delta_K = amax(abs(K_old - K))
+    delta_K = amax(K_old - K)
     C += 1
     print(".")
 print("NCA vertex function Converged within", d_dyson, "after", C, "iterations.")
