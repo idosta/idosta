@@ -66,7 +66,7 @@ delta_l_energy = [-1j * gamma(w) * f(w, miu[0]), -1j * gamma(w) * f(w, miu[1])]
 delta_g_energy = [-1j * gamma(w) * (1 - f(w, miu[0])), -1j * gamma(w) * (1 - f(w, miu[1]))]
 
 delta_l_temp = [ifftshift(fft(fftshift(delta_l_energy[0]))) * dw / pi, ifftshift(fft(fftshift(delta_l_energy[1]))) * dw / pi]
-delta_g_temp = [ifftshift(fft(fftshift(delta_g_energy[0]))) * dw / pi, ifftshift(fft(fftshift(delta_g_energy[1]))) * dw / pi]
+delta_g_temp = [ifftshift(ifft(fftshift(delta_g_energy[0]))) * len(w) * dw / pi, ifftshift(ifft(fftshift(delta_g_energy[1]))) * len(w) * dw / pi]
 
 
 def time_to_fftind(t):
@@ -76,8 +76,8 @@ def time_to_fftind(t):
 hl = zeros(N, complex)
 hg = zeros(N, complex)
 for i in range(N):
-    hl[i] = delta_l_temp[0][time_to_fftind(times[i])] + delta_l_temp[1][time_to_fftind(times[i])]
-    hg[i] = delta_g_temp[0][time_to_fftind(times[i])] + delta_g_temp[1][time_to_fftind(times[i])]
+    hl[i] = (delta_l_temp[0][time_to_fftind(times[i])] + delta_l_temp[1][time_to_fftind(times[i])])
+    hg[i] = (delta_g_temp[0][time_to_fftind(times[i])] + delta_g_temp[1][time_to_fftind(times[i])])
 
 # r = []
 # p = []
@@ -94,6 +94,6 @@ plt.plot(times, real(hg), ".")
 plt.show()
 plt.plot(times, df_guy.iloc[1000:, [2]], "+")
 plt.plot(times, imag(hg), ".")
-plt.plot(times, imag(p), "o")
+# plt.plot(times, imag(p), "o")
 plt.show()
 

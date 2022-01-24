@@ -17,13 +17,13 @@ gate = 0
 epsilon0 = -U / 2 + gate * ga
 E = (0, epsilon0, epsilon0, 2 * epsilon0 + U)
 lamb = 0
-t_max = 5.0  # maximal time
+t_max = 5  # maximal time
 
 # numerical parameters
-N = 1001  # number of time points
+N = 201  # number of time points
 dt = t_max / (N - 1)
 times = linspace(0, t_max, N)
-cutoff_factor = 5.0
+cutoff_factor = 100.0
 dw = 0.001
 w = linspace(-cutoff_factor * ec, cutoff_factor * ec, int(2 * cutoff_factor * ec / dw) + 1)
 d_dyson = 0.00000000001
@@ -31,8 +31,7 @@ d_dyson = 0.00000000001
 
 # define mathematical functions
 def fft_integral(x, y):
-    temp = (fftconvolve(x, y)[:len(x)] - 0.5 * (x[:] * y[0] + x[0] * y[:])) * dt
-    temp[(len(x) + 1):] = 0
+    temp = (fftconvolve(x, y)[:N] - 0.5 * (x[:N] * y[0] + x[0] * y[:N])) * dt
     return temp
 
 
@@ -121,9 +120,9 @@ def update_green(self_energy, old_green, bare_green):
 def update_self_energy(number_of_times, green):
     temp = zeros((4, number_of_times), complex)
     for t_se in range(number_of_times):
-        temp[0, t_se] = -1j * hl[t_se] * (green[1, t_se] + green[2, t_se])
-        temp[1, t_se] = -1j * hg[t_se] * green[0, t_se] - 1j * hl[t_se] * green[3, t_se]
-        temp[2, t_se] = -1j * hg[t_se] * green[0, t_se] - 1j * hl[t_se] * green[3, t_se]
+        temp[0, t_se] = +1j * conj(hl[t_se]) * (green[1, t_se] + green[2, t_se])
+        temp[1, t_se] = -1j * hg[t_se] * green[0, t_se] + 1j * conj(hl[t_se]) * green[3, t_se]
+        temp[2, t_se] = -1j * hg[t_se] * green[0, t_se] + 1j * conj(hl[t_se]) * green[3, t_se]
         temp[3, t_se] = -1j * hg[t_se] * (green[1, t_se] + green[2, t_se])
     return temp
 
@@ -148,6 +147,7 @@ while delta_G > d_dyson:
     delta_G = amax(G - G_old)
     C += 1
     print(".")
+G = update_green(SE, G_old, G0)
 for s in range(4):
     savetxt("/home/ido/NCA/temp_results/G_ido" + str(s) + ".out",
             c_[times, G[s, :].real, G[s, :].imag])
