@@ -24,9 +24,9 @@ N = 201  # number of time points
 dt = t_max / (N - 1)
 times = linspace(0, t_max, N)
 cutoff_factor = 100.0
-dw = 0.001
+dw = 0.01
 w = linspace(-cutoff_factor * ec, cutoff_factor * ec, int(2 * cutoff_factor * ec / dw) + 1)
-d_dyson = 0.00000000001
+d_dyson = 1e-10
 
 
 # define mathematical functions
@@ -48,8 +48,8 @@ def f(energy, mu):
     return 1 / (1 + exp(beta * (energy - mu)))
 
 
-delta_l_energy = [-1j * gamma(w) * f(w, miu[0]), -1j * gamma(w) * f(w, miu[1])]
-delta_g_energy = [-1j * gamma(w) * (1 - f(w, miu[0])), -1j * gamma(w) * (1 - f(w, miu[1]))]
+delta_l_energy = [gamma(w) * f(w, miu[0]), gamma(w) * f(w, miu[1])]
+delta_g_energy = [gamma(-w) * (1 - f(w, miu[0])), gamma(-w) * (1 - f(w, miu[1]))]
 
 delta_l_temp = [ifftshift(fft(fftshift(delta_l_energy[0]))) * dw / pi,
                 ifftshift(fft(fftshift(delta_l_energy[1]))) * dw / pi]
@@ -57,53 +57,15 @@ delta_g_temp = [ifftshift(fft(fftshift(delta_g_energy[0]))) * dw / pi,
                 ifftshift(fft(fftshift(delta_g_energy[1]))) * dw / pi]
 
 
-def time_to_fftind(t):
-    return int(cutoff_factor * ec / dw + round(t * cutoff_factor * ec / pi))
+def time_to_fftind(ti):
+    return int(cutoff_factor * ec / dw + round(ti * cutoff_factor * ec / pi))
 
 
 hl = zeros(N, complex)
 hg = zeros(N, complex)
 for i in range(N):
-    hl[i] = delta_l_temp[0][time_to_fftind(times[i])] + delta_l_temp[1][time_to_fftind(times[i])]
+    hl[i] = conj(delta_l_temp[0][time_to_fftind(times[i])] + delta_l_temp[1][time_to_fftind(times[i])])
     hg[i] = delta_g_temp[0][time_to_fftind(times[i])] + delta_g_temp[1][time_to_fftind(times[i])]
-
-
-def d_op(spin, role, final_state, initial_state):  # 0=spin down 1=spin up, 0=annihilation 1=creation
-    temp = 0
-    if spin == 0:
-        if role == 0:
-            if final_state == 0 and initial_state == 1 or final_state == 1 and initial_state == 3:
-                temp = 1
-        if role == 1:
-            if initial_state == 0 and final_state == 1 or initial_state == 1 and final_state == 3:
-                temp = 1
-    if spin == 1:
-        if role == 0:
-            if final_state == 0 and initial_state == 2 or final_state == 2 and initial_state == 3:
-                temp = 1
-        if role == 1:
-            if initial_state == 0 and final_state == 2 or initial_state == 2 and final_state == 3:
-                temp = 1
-    return temp
-
-
-def cross_branch_hyb(down_index, up_index, t_cbh):
-    tempo = 0
-    for spin in [0, 1]:
-        tempo = tempo - 1j * hl[t_cbh] * d_op(spin, 0, down_index, up_index) * exp(-1j * lamb * times[t_cbh]) + \
-                1j * hg[t_cbh] * d_op(spin, 1, down_index, up_index) * exp(1j * lamb * times[t_cbh])
-    return tempo
-
-
-CBH = zeros((4, 4, N, N), complex)
-P = zeros((4, 4, N), complex)
-for down in range(4):
-    for up in range(4):
-        for dif in range(-N, N):  # must fix negative times
-            P[down, up, dif] = cross_branch_hyb(down, up, dif)
-        for it in range(N):
-            for ft in range(N):
-                CBH[down, up, it, ft] = P[down, up, it - ft]
 
 
 def g(time, site):  # t for time and j for the site number in the dot
@@ -113,17 +75,17 @@ def g(time, site):  # t for time and j for the site number in the dot
 def update_green(self_energy, old_green, bare_green):
     temp = copy(bare_green)
     for site in range(4):
-        temp[site, :] += integral_green(bare_green[site, :], self_energy[site, :], old_green[site, :])
+        temp[site, :] -= integral_green(bare_green[site, :], self_energy[site, :], old_green[site, :])
     return temp
 
 
 def update_self_energy(number_of_times, green):
     temp = zeros((4, number_of_times), complex)
     for t_se in range(number_of_times):
-        temp[0, t_se] = +1j * conj(hl[t_se]) * (green[1, t_se] + green[2, t_se])
-        temp[1, t_se] = -1j * hg[t_se] * green[0, t_se] + 1j * conj(hl[t_se]) * green[3, t_se]
-        temp[2, t_se] = -1j * hg[t_se] * green[0, t_se] + 1j * conj(hl[t_se]) * green[3, t_se]
-        temp[3, t_se] = -1j * hg[t_se] * (green[1, t_se] + green[2, t_se])
+        temp[0, t_se] = hl[t_se] * (green[1, t_se] + green[2, t_se])
+        temp[1, t_se] = hg[t_se] * green[0, t_se] + hl[t_se] * green[3, t_se]
+        temp[2, t_se] = hg[t_se] * green[0, t_se] + hl[t_se] * green[3, t_se]
+        temp[3, t_se] = hg[t_se] * (green[1, t_se] + green[2, t_se])
     return temp
 
 
@@ -144,9 +106,9 @@ while delta_G > d_dyson:
     G_old = copy(G)
     G = update_green(SE, G_old, G0)
     SE = update_self_energy(N, G)
-    delta_G = amax(G - G_old)
+    delta_G = amax(abs(G - G_old))
     C += 1
-    print(".")
+    print(C, delta_G)
 G = update_green(SE, G_old, G0)
 for s in range(4):
     savetxt("/home/ido/NCA/temp_results/G_ido" + str(s) + ".out",
@@ -156,30 +118,48 @@ print("NCA green function Converged within", d_dyson, "after", C, "iterations.")
 
 #  calculate the vertex function K
 
+def sign_time(f, t1, t2):
+    if t2 - t1 > 0:
+        return f[t2 - t1]
+    else:
+        return conj(f[t1 - t2])
+
+
+for i in range(N):
+    hl[i] = transpose(hl[i]) * exp(-1j * lamb * times[i])
+    hg[i] = hg[i] * exp(1j * lamb * times[i])  # check for problems with lambda
+H_mat = zeros((4, 4, N, N), complex)
+for t1 in range(N):
+    for t2 in range(N):
+        H_mat[0, 1, t1, t2] = sign_time(hg, t1, t2)
+        H_mat[0, 2, t1, t2] = sign_time(hg, t1, t2)
+        H_mat[1, 0, t1, t2] = sign_time(hl, t1, t2)
+        H_mat[1, 3, t1, t2] = sign_time(hg, t1, t2)
+        H_mat[2, 0, t1, t2] = sign_time(hl, t1, t2)
+        H_mat[2, 3, t1, t2] = sign_time(hg, t1, t2)
+        H_mat[3, 1, t1, t2] = sign_time(hl, t1, t2)
+        H_mat[3, 2, t1, t2] = sign_time(hl, t1, t2)
 
 def gen_bare_vertex(final_state, initial_state, final_time, initial_time, green_function):
     return conj(green_function[final_state, final_time]) * green_function[initial_state, initial_time] \
            * int(bool(initial_state == final_state))
 
 
-def integrate_vertex(a, b, green, old_vertex):
-    conv_in = zeros((N, N), complex)
-    integral = zeros((N, N), complex)
-    multi = zeros((4, N, N), complex)
-    for at in range(4):
-        multi[b] += old_vertex[a, at, :, :] * CBH[at, b, :, :]
-    for t_inner in range(N):
-        conv_in[:, t_inner] = fft_integral(multi[b, :, t_inner], conj(green[b, :]))
-    for t_outer in range(N):
-        integral[:, t_outer] = fft_integral(green[b, :], conv_in[:, t_outer])
-    return integral
+def mult_vertex(k):
+    v = zeros((4, N, N), complex)
+    for l in range(4):
+        for m in range(4):
+            v[l] += k[m] * H_mat[m, l]
+    return v
 
-
-def update_vertex(old_vertex, bare_vertex, green):
-    temp = copy(bare_vertex)
-    for a in range(4):
-        for b in range(4):
-            temp[a, b] += integrate_vertex(a, b, green, old_vertex)
+def update_vertex(p, g, k0):
+    temp = copy(k0)
+    for f in range(4):
+        c = zeros((N, N), complex)
+        for t2 in range(N):
+            c[:, t2] = fft_integral(p[f, :, t2], g[f, :])
+        for t1 in range(N):
+            temp[f, t1, :] += fft_integral(conj(g[f, :]), c[t1, :])
     return temp
 
 
@@ -188,17 +168,23 @@ for j1 in range(N):
     for j2 in range(N):
         for down in range(4):
             K0[down, down, j1, j2] = gen_bare_vertex(down, down, j1, j2, G)
-
 K = copy(K0)
-delta_K = d_dyson + 1
 print("start iterations to find the vertex function")
-C = 0
-while delta_K > d_dyson:
-    K_old = copy(K)
-    K = update_vertex(K_old, K0, G)
-    delta_K = amax(K_old - K)
-    C += 1
-    print(".")
+
+for a in range(4):
+    K_old = zeros((4, N, N), complex)
+    C = 0
+    delta_K = d_dyson + 1
+    while delta_K > d_dyson:
+        K_old = copy(K[a])
+        P = mult_vertex(K[a])
+        K[a] = update_vertex(P, G, K0[a])
+        delta_K = amax(abs(K[a] - K_old))
+        C += 1
+        print(a, C, delta_K)
+
+
+
 print("NCA vertex function Converged within", d_dyson, "after", C, "iterations.")
 
 P = zeros((4, 4, N), complex)
@@ -206,7 +192,7 @@ for i in range(4):
     for j in range(4):
         for tn in range(N):
             P[i, j, tn] = K[i, j, tn, 0]
-        savetxt("/home/ido/NCA/temp_results/P_ido" + str(i) + str(j) + ".out", c_[times, P[i, j, :].real])
+        savetxt("/home/ido/NCA/temp_results/P_ido" + str(i) + str(j) + ".out", c_[times, P[i, j, :]])
 
 # calculate partition function
 Z = []
