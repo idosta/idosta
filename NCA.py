@@ -25,7 +25,7 @@ dt = t_max / (N - 1)
 times = linspace(0, t_max, N)
 cutoff_factor = 100.0
 dw = 0.01
-w = linspace(-cutoff_factor * ec, cutoff_factor * ec, int(2 * cutoff_factor * ec / dw) + 1)
+w = arange(-ec * cutoff_factor, ec * cutoff_factor, dw)
 d_dyson = 1e-10
 
 
@@ -58,7 +58,7 @@ delta_g_temp = [ifftshift(fft(fftshift(delta_g_energy[0]))) * dw / pi,
 
 
 def time_to_fftind(ti):
-    return int(cutoff_factor * ec / dw + round(ti * cutoff_factor * ec / pi))
+    return int(cutoff_factor * ec / dw) + (round(ti * cutoff_factor * ec / pi))
 
 
 hl = zeros(N, complex)
@@ -110,9 +110,9 @@ while delta_G > d_dyson:
     C += 1
     print(C, delta_G)
 G = update_green(SE, G_old, G0)
-for s in range(4):
-    savetxt("/home/ido/NCA/temp_results/G_ido" + str(s) + ".out",
-            c_[times, G[s, :].real, G[s, :].imag])
+# for s in range(4):
+#     savetxt("/home/ido/NCA/temp_results/G_ido" + str(s) + ".out",
+#             c_[times, G[s, :].real, G[s, :].imag])
 print("NCA green function Converged within", d_dyson, "after", C, "iterations.")
 
 
@@ -123,10 +123,12 @@ def sign_time(f, t1, t2):
         return f[t2 - t1]
     else:
         return conj(f[t1 - t2])
-
+#
+# savetxt("/home/ido/NCA/temp_results/Delta_lesserI.out", c_[times, imag(hl), -real(hl)])
+# savetxt("/home/ido/NCA/temp_results/Delta_greaterI.out", c_[times, imag(hg), -real(hg)])
 
 for i in range(N):
-    hl[i] = transpose(hl[i]) * exp(-1j * lamb * times[i])
+    hl[i] = hl[i] * exp(-1j * lamb * times[i])
     hg[i] = hg[i] * exp(1j * lamb * times[i])  # check for problems with lambda
 H_mat = zeros((4, 4, N, N), complex)
 for t1 in range(N):
@@ -140,6 +142,7 @@ for t1 in range(N):
         H_mat[3, 1, t1, t2] = sign_time(hl, t1, t2)
         H_mat[3, 2, t1, t2] = sign_time(hl, t1, t2)
 
+
 def gen_bare_vertex(final_state, initial_state, final_time, initial_time, green_function):
     return conj(green_function[final_state, final_time]) * green_function[initial_state, initial_time] \
            * int(bool(initial_state == final_state))
@@ -151,6 +154,7 @@ def mult_vertex(k):
         for m in range(4):
             v[l] += k[m] * H_mat[m, l]
     return v
+
 
 def update_vertex(p, g, k0):
     temp = copy(k0)
@@ -186,13 +190,13 @@ for a in range(4):
 
 
 print("NCA vertex function Converged within", d_dyson, "after", C, "iterations.")
-
-P = zeros((4, 4, N), complex)
-for i in range(4):
-    for j in range(4):
-        for tn in range(N):
-            P[i, j, tn] = K[i, j, tn, 0]
-        savetxt("/home/ido/NCA/temp_results/P_ido" + str(i) + str(j) + ".out", c_[times, P[i, j, :]])
+#
+# P = zeros((4, 4, N), complex)
+# for i in range(4):
+#     for j in range(4):
+#         for tn in range(N):
+#             P[i, j, tn] = K[i, j, tn, tn]
+#         savetxt("/home/ido/NCA/temp_results/P_ido" + str(i) + str(j) + ".out", c_[times, P[i, j, :].real])
 
 # calculate partition function
 Z = []
