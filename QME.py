@@ -6,7 +6,7 @@ from scipy.linalg import eig
 from pylab import *
 
 
-def QME(tl ,tm, v, epsilon, beta, U):
+def QME(tl ,tm, v, epsilon, T, U, t_max, N):
     FI = []
 
     #phisical parameters
@@ -14,7 +14,7 @@ def QME(tl ,tm, v, epsilon, beta, U):
     ga=tm**2/tl
     miu = (v * ga / 2, -v * ga / 2)
     U = U * ga
-    beta = beta / ga
+    beta = 1 / (ga * T)
     eps_m = -U / 2 + epsilon * ga
     # E is the energy of the dot=(00,up0,down0,updown)
     E = (0, eps_m, eps_m, 2 * eps_m + U)
@@ -29,7 +29,7 @@ def QME(tl ,tm, v, epsilon, beta, U):
     #numerical parameters
 
     dt = 1
-    tmax = 50
+    tmax = t_max
     ddt=0.01
 
     #initial conditioin
