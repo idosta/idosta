@@ -2,9 +2,8 @@ import matplotlib.pyplot as plt
 from numpy import *
 from scipy.signal import fftconvolve
 from scipy.fftpack import fft, fftshift, ifftshift
-from math import isnan
 
-v, eps, u, temperature, t_m, t_l = 5, 0, 1, 1, 1, 1
+v, eps, u, temperature, t_m, t_l = 1, 0, 5, 1, 1, 1
 
 ga = (t_m ** 2) / t_l
 epsilon_lead = 0 * ga  # adding elctron energy on the lead
@@ -18,24 +17,23 @@ E = (0, epsilon0, epsilon0, 2 * epsilon0 + U)
 # t_max is maximal time
 
 # numerical parameters
-# N is number of time points
+# N is number of time points index N is time zero
 
-t_max = 25  # numerical parameter for infinity
-N = 5000 * t_max  # number of time data points
+t_max = 20  # numerical parameter for infinity
+N = 10000 * t_max  # number of time data points
 times = linspace(-t_max, t_max, 2 * N + 1)
 times_plus = linspace(0, t_max, N + 1)
 dt = times[1] - times[0]
-cutoff_factor = 10.0
-N_w = 500000
+cutoff_factor = 100.0
+N_w = 5000000
 w = linspace(- 2 * t_l * cutoff_factor, 2 * t_l * cutoff_factor, N_w)
 dw = w[1] - w[0]
-d_dyson = 1e-6
-a = 0.2
+d_dyson = 1e-7
+a = 0
 
 
 def fft_integral(x, y):
-    temp = (fftconvolve(x, y)[:len(x)] - 0.5 * (x[:len(x)] * y[0] + x[0] * y[:len(x)])) * dt
-    temp[len(x):] = 0
+    temp = (fftconvolve(x, y)[0:len(x)] - 0.5 * (x[0:len(x)] * y[0] + x[0] * y[0:len(x)])) * dt
     return temp
 
 
@@ -71,14 +69,24 @@ def time_to_fftind(ti):
 
 hl = zeros((3, 2 * N + 1), complex)
 hg = zeros((3, 2 * N + 1), complex)
-for i in range(2 * N + 1):
+for i in range(N, 2 * N + 1):
     hl[0][i] = conj(delta_l_temp[0][time_to_fftind(times[i])])
     hl[1][i] = conj(delta_l_temp[1][time_to_fftind(times[i])])
     hg[0][i] = delta_g_temp[0][time_to_fftind(times[i])]
     hg[1][i] = delta_g_temp[1][time_to_fftind(times[i])]
+    hl[:2, 2 * N - i] = conj(hl[:2, i])
+    hg[:2, 2 * N - i] = conj(hg[:2, i])
 hl[2] = hl[0] + hl[1]
 hg[2] = hg[0] + hg[1]
 
+
+#
+# plt.plot(times, hl[2])
+# plt.plot(times, hg[2])
+# plt.show()
+# plt.plot(times, hl[2].imag)
+# plt.plot(times, hg[2].imag)
+# plt.show()
 
 def g(time, site):  # t for time and j for the site number in the dot
     return exp(-1j * E[site] * time)
@@ -96,7 +104,7 @@ def update_self_energy(green):
     for t_se in range(N, 2 * N + 1):
         temp[0, t_se - N] = hl[2][t_se] * (green[1, t_se - N] + green[2, t_se - N])
         temp[1, t_se - N] = hg[2][t_se] * green[0, t_se - N] + hl[2][t_se] * green[3, t_se - N]
-        temp[2, t_se - N] = hg[2][t_se] * green[0, t_se - N] + hl[2][t_se] * green[3, t_se - N]
+        temp[2, t_se - N] = temp[1, t_se - N]
         temp[3, t_se - N] = hg[2][t_se] * (green[1, t_se - N] + green[2, t_se - N])
     return temp
 
@@ -106,7 +114,7 @@ def update_self_energy(green):
 G0 = zeros((4, N + 1), complex)
 for t in range(N + 1):
     for state_i in range(4):
-        G0[state_i, t] = g(times_plus[t], state_i) * exp(-10 * times_plus[t] / t_max)
+        G0[state_i, t] = g(times_plus[t], state_i) * exp(-5 * times_plus[t] / t_max)
 G = copy(G0)
 SE = update_self_energy(G)
 delta_G = d_dyson + 1
@@ -120,23 +128,24 @@ while delta_G > d_dyson:
     C += 1
     print('G iteration number', C, 'with delta G', delta_G)
 print("NCA green function Converged within", delta_G, "after", C, "iterations.")
+# savetxt("g.out", c_[G.real])
+# savetxt("hg.out", c_[hg.real])
+# savetxt("hl.out", c_[hl.real])
+# savetxt("gi.out", c_[G.imag])
+# savetxt("hgi.out", c_[hg.imag])
+# savetxt("hli.out", c_[hl.imag])
 
 sG = zeros((4, 2 * N + 1), complex)
 sG[:, N:] = G
 sG[:, :N + 1] = conj(G[:, ::-1])
-plt.plot(times, sG[0].imag, label='0i')
-plt.plot(times, sG[1].imag, label='1i')
-plt.plot(times, sG[2], label='1')
-plt.plot(times, sG[3], label='0')
-plt.legend()
-plt.show()
-#   calculating vertex function
+
+# calculating vertex function
 G = sG
 K = zeros((4, 2 * N + 1), complex)
 
 
 def normal_k(vertex):
-    vertex[:, :] = vertex[:, :] / (vertex[0, N] + vertex[1, N] + vertex[2, N] + vertex[3, N])
+    vertex[:, :] = vertex[:, :] / sum(vertex[:, N])
     return vertex
 
 
@@ -145,23 +154,32 @@ def mid_term(vertex):
     temp_mat[0] = (vertex[1] + vertex[2]) * hl[2]
     temp_mat[3] = (vertex[1] + vertex[2]) * hg[2]
     temp_mat[1] = vertex[0] * hg[2] + vertex[3] * hl[2]
-    temp_mat[2] = vertex[0] * hg[2] + vertex[3] * hl[2]
-    return temp_mat[::-1]
+    temp_mat[2] = temp_mat[1]
+    return temp_mat
 
 
-for i in range(N + 1):
-    K[:, N + i] = G[:, N - 1] * conj(G[:, N - 1 - i])
-    K[:, N - i] = conj(G[:, N - 1]) * G[:, N - 1 - i]
-
-K = normal_k(K)
+# for i in range(N + 1):
+#     K[0, N + i] = G[0, 2 * N - i] * G[0, 0]
+#     K[0, N - i] = conj(K[0, N + i])
+#     K[1, N + i] = G[1, 2 * N - i] * G[1, 0]
+#     K[1, N - i] = conj(K[1, N + i])
+# K[2] = K[1]
+# K[3] = K[0]
+K = normal_k(G)
 
 
 def update_vertex(M):
     A = zeros((4, 2 * N + 1), complex)
-    B = copy(A)
+    B = zeros((4, 2 * N + 1), complex)
+    MR = M[:, :]
     for c in range(4):
-        A[c] = fft_integral(G[c, :], M[c, :])
-        B[c] = fft_integral(conj(G[c, :]), A[c, ::-1])
+        A[c] = fft_integral(G[c, :], MR[c, :])
+        AR = A[:, ::-1].copy()
+        B[c] = fft_integral(conj(G[c, :]), AR[c, :])
+    # plt.plot(times, A[1])
+    # plt.show()
+    # plt.plot(times, B[1])
+    # plt.show()
     return B
 
 
@@ -171,10 +189,34 @@ It = zeros((4, 2 * N + 1), complex)
 while delta_K > d_dyson:
     K_old = copy(K)
     It = mid_term(K_old)
+    if C % 1 == 0:
+        plt.plot(times, K[0], label='0')
+        plt.plot(times, K[1], label='1')
+        plt.plot(times, K[2], label='2')
+        plt.plot(times, K[3], label='3')
+        plt.title('K')
+        plt.show()
+        plt.plot(times, K[2].imag, label='2i')
+        plt.plot(times, K[3].imag, label='3i')
+        plt.legend()
+        plt.title('K')
+        plt.show()
+        # plt.title('Mid')
+        # plt.plot(times, It[0], label='0')
+        # plt.plot(times, It[1], label='1')
+        # plt.plot(times, It[2], label='2')
+        # plt.plot(times, It[3], label='3')
+        # plt.show()
+        # plt.title('Mid')
+        # plt.plot(times, It[2].imag, label='2i')
+        # plt.plot(times, It[3].imag, label='3i')
+        # plt.legend()
+        # plt.show()
     print('K iteration number', C, 'with delta K', delta_K)
-    K = (1 - a) * update_vertex(It) + a * K
-    K = normal_k(K)
-
+    newK = update_vertex(It)
+    # sK = newK[:, N:]
+    # newK[:, :N + 1] = conj(sK[:, ::-1]).copy()
+    K = (1 - a) * normal_k(newK) + a * K
     delta_K = amax(abs(K - K_old))
     C += 1
 
@@ -186,21 +228,16 @@ plt.plot(times, K[2].imag, label='1i')
 plt.plot(times, K[3].imag, label='0i')
 plt.legend()
 plt.show()
-print(K[0, N], K[1, N])
-
-def current_cal(vertex, propagator, hyb_g):
-    down = vertex[1] * propagator[1]
-    empt = vertex[0] * propagator[0]
-    I = fft_integral(down[N:], hyb_g[N:]) + fft_integral(empt[N:], hyb_g[N:])
-    # I += fft_integral(down[:N + 1][::-1], hyb_g[:N + 1][::-1]) + fft_integral(empt[:N + 1][::-1], hyb_g[:N + 1][::-1])
-    return I
+print(K[0, N], K[1, N], K[2, N], K[3, N])
 
 
-plt.plot(times_plus, current_cal(K, G, hg[2]))
+# def current_cal(vertex, propagator, hyb_g):
+#     down = vertex[1] * propagator[0]
+#     empt = vertex[0] * propagator[1]
+#     I = fft_integral(down[N:], hyb_g[N:]) + fft_integral(empt[N:], hyb_g[N:])
+#     # I += fft_integral(down[:N + 1][::-1], hyb_g[:N + 1][::-1]) + fft_integral(empt[:N + 1][::-1], hyb_g[:N + 1][::-1])
+#     return I
+
+
+plt.plot(times_plus, current_cal(K, G, hg[0]))
 plt.show()
-
-
-
-
-
-

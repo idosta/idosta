@@ -1,3 +1,4 @@
+import matplotlib.pyplot as plt
 from numpy import *
 from scipy.signal import fftconvolve
 from scipy.fftpack import fft, fftshift, ifftshift
@@ -20,6 +21,7 @@ def NCA(v, eps, u, temperature, lamb, t_max, N, dim_l, t_m, t_l):
     gate = eps
     epsilon0 = -U / 2 + gate
     E = (0, epsilon0, epsilon0, 2 * epsilon0 + U)
+    epsilon_lead = 0
     # t_max is maximal time
 
     # numerical parameters
@@ -81,10 +83,6 @@ def NCA(v, eps, u, temperature, lamb, t_max, N, dim_l, t_m, t_l):
                 return build_h_2d(n, ep, t_le), dim
             if dim == 3:
                 return build_h_3d(n, ep, t_le), dim
-            if dim == 4:
-                return build_h_4d(n, ep, t_le), dim
-            if dim == 5:
-                return build_h_5d(n, ep, t_le), dim
 
         H, d = build_h(Nd, epsilon, t_lead)
         E_max = float(eigsh(H, 1, which='LA', return_eigenvectors=False))
@@ -137,17 +135,14 @@ def NCA(v, eps, u, temperature, lamb, t_max, N, dim_l, t_m, t_l):
     def f(energy, mu):
         return 1 / (1 + exp(beta * (energy - mu)))
 
-    my_file = Path('/gcohenlab/data/idozemach/nca/nca_T' + str(T) + '_d_lamb' + str(d_lamb) + '_dim' + str(dim) + '_t_l'
-                   + str(t_l) + '_t_m' + str(t_m) + '_u' + str(u) + '/gw_tl_' + str(t_l) + 'tm_' + str(t_m) + '.out')
-    if my_file.is_file():
-        gam_w = loadtxt(
-            '/gcohenlab/data/idozemach/nca/nca_T' + str(T) + '_d_lamb' + str(d_lamb) + '_dim' + str(dim) + '_t_l' +
-            str(t_l) + '_t_m' + str(t_m) + '_u' + str(u) + '/gw_tl_' + str(t_l) + 'tm_' + str(t_m) + '.out')
-    else:
-        gam_w = gamma_c(w)
-        savetxt('/gcohenlab/data/idozemach/nca/nca_T' + str(T) + '_d_lamb' + str(d_lamb) + '_dim' + str(dim) + '_t_l' +
-                str(t_l) + '_t_m' + str(t_m) + '_u' + str(u) + '/gw_tl_' + str(t_l) + 'tm_' + str(t_m) + '.out',
-                c_[gam_w])
+    def gamma(w_sp):
+        P = zeros(len(w_sp))
+        for en in range(len(w_sp)):
+            if abs(w_sp[en] - epsilon_lead) < (2 * t_l):
+                P[en] = (t_m ** 2 / (2 * t_l ** 2)) * sqrt(4 * t_l ** 2 - (w_sp[en] - epsilon_lead) ** 2)
+        return P
+
+    gam_w = gamma(w)
 
     delta_l_energy = [gam_w * f(w, miu[0]), gam_w * f(w, miu[1])]
     delta_g_energy = [gam_w * (1 - f(w, miu[0])), gam_w * (1 - f(w, miu[1]))]
@@ -205,6 +200,14 @@ def NCA(v, eps, u, temperature, lamb, t_max, N, dim_l, t_m, t_l):
         SE = update_self_energy(N, G)
         delta_G = amax(abs(G - G_old))
         C += 1
+    plt.plot(times, G[0].imag, label='0i')
+    plt.plot(times, G[1].imag, label='1i')
+    plt.plot(times, G[2], label='1')
+    plt.plot(times, G[3], label='0')
+    plt.legend()
+    plt.show()
+
+    # calculating v
 
     #    print(C, delta_G)
     # if lamb == 0:
@@ -223,7 +226,7 @@ def NCA(v, eps, u, temperature, lamb, t_max, N, dim_l, t_m, t_l):
 
     # savetxt("/home/ido/NCA/temp_results/Delta_lesserI.out", c_[times, imag(hl), -real(hl)])
     # savetxt("/home/ido/NCA/temp_results/Delta_greaterI.out", c_[times, imag(hg), -real(hg)])
-# FCS time
+    # FCS time
     for i in range(N):
         hl[2][i] = hl[0][i] * exp(lamb / 2) + hl[1][i]
         hg[2][i] = hg[0][i] * exp(-lamb / 2) + hg[1][i]
@@ -282,38 +285,29 @@ def NCA(v, eps, u, temperature, lamb, t_max, N, dim_l, t_m, t_l):
     # calculate partition function
     p0 = zeros(4)
     for i in range(4):
-        p0[i] = exp(-beta * E[i])
+        p0[i] = exp(-E[i] * beta)
     p0 = p0 / sum(p0)
 
     if lamb == 0:
         Pr = zeros((4, N), complex)
         for i in range(4):
             for tn in range(N):
-                Pr[i, tn] = (K[i, 0, tn, tn] + K[i, 1, tn, tn] + K[i, 2, tn, tn] + K[i, 3, tn, tn]) * p0[i]
-            savetxt("P_ido" + str(i) + ".out", c_[times, Pr[i, :].real, Pr[i, :].imag])
+                Pr[i, tn] = K[i, :, tn, tn] @ p0[:]
 
-    Z = zeros(N, complex)
-    for jt in range(N):
-        temp_Z = 0
-        for i in range(4):
-            for j in range(4):
-                temp_Z += p0[i] * K[j, i, jt, jt]
-        Z[jt] = temp_Z
-    return Z
-
-
-exec(open('run.param').read())
-# General parameters:
+    # Z = zeros(N, complex)
+    # for jt in range(N):
+    #     temp_Z = 0
+    #     for i in range(4):
+    #         for j in range(4):
+    #             temp_Z += p0[i] * K[j, i, jt, jt]
+    #     Z[jt] = temp_Z
+    return Pr
 
 
-time = linspace(0, t_max, N)
-z = zeros((5, N), complex)
-z[0] = NCA(v, h, u, T, -d_lamb * 2, t_max, N, dim, t_m, t_l)
-z[1] = NCA(v, h, u, T, -d_lamb, t_max, N, dim, t_m, t_l)
-z[2] = NCA(v, h, u, T, 0, t_max, N, dim, t_m, t_l)
-z[3] = NCA(v, h, u, T, d_lamb, t_max, N, dim, t_m, t_l)
-z[4] = NCA(v, h, u, T, d_lamb * 2, t_max, N, dim, t_m, t_l)
-savetxt("NCA_GF v=" + str(v) + "h=" + str(h) + ".out", c_[time, z[0].real, z[0].imag, z[1].real, z[1].imag, z[2].real,
-                                                          z[2].imag, z[3].real, z[3].imag, z[4].real, z[4].imag])
-
-# for high dim check hyb function
+y = NCA(1, 0, 1, 0.1, 0, 15, 500, 1, 1, 1)
+plt.plot(linspace(0, 8, len(y[0])), y[0], label='0')
+plt.plot(linspace(0, 8, len(y[0])), y[1], label='1')
+plt.plot(linspace(0, 8, len(y[0])), y[2], label='2')
+plt.plot(linspace(0, 8, len(y[0])), y[3], label='3')
+plt.legend()
+plt.show()
