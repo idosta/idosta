@@ -1,16 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="5e5d2bd5-c1c3-4abf-90fc-306722a8f319" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/g.out" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gi.out" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/hg.out" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/hgi.out" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/hl.out" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/hli.out" afterDir="false" />
+    <list default="true" id="5e5d2bd5-c1c3-4abf-90fc-306722a8f319" name="Changes" comment="bug in vertex iterations">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/equalibrium_nca.py" beforeDir="false" afterPath="$PROJECT_DIR$/equalibrium_nca.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nca.py" beforeDir="false" afterPath="$PROJECT_DIR$/nca.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -180,6 +173,14 @@
       <option name="presentableId" value="Default" />
       <updated>1644234794094</updated>
     </task>
+    <task id="LOCAL-00001" summary="bug in vertex iterations">
+      <created>1652010834884</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1652010834884</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -196,6 +197,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="bug in vertex iterations" />
+    <option name="LAST_COMMIT_MESSAGE" value="bug in vertex iterations" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

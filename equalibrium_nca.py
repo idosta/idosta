@@ -76,8 +76,8 @@ for i in range(N, 2 * N + 1):
     hg[1][i] = delta_g_temp[1][time_to_fftind(times[i])]
     hl[:2, 2 * N - i] = conj(hl[:2, i])
     hg[:2, 2 * N - i] = conj(hg[:2, i])
-hl[2] = hl[0] + hl[1]
-hg[2] = hg[0] + hg[1]
+hl[2] = hl[0] + hl[1]  # lesser hybridization function
+hg[2] = hg[0] + hg[1]  # greater
 
 
 #
@@ -150,6 +150,7 @@ def normal_k(vertex):
 
 
 def mid_term(vertex):
+    # this term is the multiplication of the hybridization function and the vertex function
     temp_mat = zeros((4, 2 * N + 1), complex)
     temp_mat[0] = (vertex[1] + vertex[2]) * hl[2]
     temp_mat[3] = (vertex[1] + vertex[2]) * hg[2]
@@ -158,13 +159,6 @@ def mid_term(vertex):
     return temp_mat
 
 
-# for i in range(N + 1):
-#     K[0, N + i] = G[0, 2 * N - i] * G[0, 0]
-#     K[0, N - i] = conj(K[0, N + i])
-#     K[1, N + i] = G[1, 2 * N - i] * G[1, 0]
-#     K[1, N - i] = conj(K[1, N + i])
-# K[2] = K[1]
-# K[3] = K[0]
 K = normal_k(G)
 
 
@@ -230,14 +224,13 @@ plt.legend()
 plt.show()
 print(K[0, N], K[1, N], K[2, N], K[3, N])
 
-
 # def current_cal(vertex, propagator, hyb_g):
 #     down = vertex[1] * propagator[0]
 #     empt = vertex[0] * propagator[1]
 #     I = fft_integral(down[N:], hyb_g[N:]) + fft_integral(empt[N:], hyb_g[N:])
 #     # I += fft_integral(down[:N + 1][::-1], hyb_g[:N + 1][::-1]) + fft_integral(empt[:N + 1][::-1], hyb_g[:N + 1][::-1])
 #     return I
-
-
-plt.plot(times_plus, current_cal(K, G, hg[0]))
-plt.show()
+#
+#
+# plt.plot(times_plus, current_cal(K, G, hg[0]))
+# plt.show()
