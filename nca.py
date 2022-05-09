@@ -304,7 +304,7 @@ def NCA(v, eps, u, temperature, lamb, t_max, N, dim_l, t_m, t_l):
     return Pr
 
 
-y = NCA(1, 0, 1, 0.1, 0, 15, 500, 1, 1, 1)
+y = NCA(1, 0, 5, 1, 0, 15, 500, 1, 1, 1)
 plt.plot(linspace(0, 8, len(y[0])), y[0], label='0')
 plt.plot(linspace(0, 8, len(y[0])), y[1], label='1')
 plt.plot(linspace(0, 8, len(y[0])), y[2], label='2')

@@ -2,8 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5e5d2bd5-c1c3-4abf-90fc-306722a8f319" name="Changes" comment="bug in vertex iterations">
+      <change afterPath="$PROJECT_DIR$/K" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/equalibrium_nca.py" beforeDir="false" afterPath="$PROJECT_DIR$/equalibrium_nca.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/g.out" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gi.out" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/hg.out" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/hgi.out" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/hl.out" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/hli.out" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/nca.py" beforeDir="false" afterPath="$PROJECT_DIR$/nca.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,7 +56,7 @@
       <recent name="$PROJECT_DIR$/../c_run" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.scratch_3">
+  <component name="RunManager" selected="Python.equalibrium_nca">
     <configuration name="equalibrium_nca" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="idosta" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -156,10 +164,10 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.scratch_3" />
         <item itemvalue="Python.equalibrium_nca" />
-        <item itemvalue="Python.scratch_2" />
         <item itemvalue="Python.nca" />
+        <item itemvalue="Python.scratch_3" />
+        <item itemvalue="Python.scratch_2" />
         <item itemvalue="Python.scratch_1" />
       </list>
     </recent_temporary>
@@ -180,7 +188,14 @@
       <option name="project" value="LOCAL" />
       <updated>1652010834884</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="bug in vertex iterations">
+      <created>1652013040607</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1652013040607</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
