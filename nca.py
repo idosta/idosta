@@ -5,7 +5,7 @@ from scipy.fftpack import fft, fftshift, ifftshift
 from scipy.sparse.linalg import eigsh
 import scipy.sparse as sp
 from numpy.polynomial.chebyshev import chebval
-from pathlib import Path
+
 
 
 # dot state description (0, down, up, 1)
@@ -25,6 +25,7 @@ def NCA(v, eps, u, temperature, lamb, t_max, N, dim_l, t_m, t_l):
     # t_max is maximal time
 
     # numerical parameters
+    # N is number of time points
     # N is number of time points
     n_cheb = 300  # number of coefficients
     N_lead = 1000  # number of sites in the lead
@@ -87,9 +88,9 @@ def NCA(v, eps, u, temperature, lamb, t_max, N, dim_l, t_m, t_l):
         H, d = build_h(Nd, epsilon, t_lead)
         E_max = float(eigsh(H, 1, which='LA', return_eigenvectors=False))
         E_min = float(eigsh(H, 1, which='SA', return_eigenvectors=False))
-        a = (E_max - E_min) / 2
+        d = (E_max - E_min) / 2
         b = (E_max + E_min) / 2
-        H, d = build_h(Nd, (epsilon - b) / a, t_lead / a)
+        H, d = build_h(Nd, (epsilon - b) / d, t_lead / d)
 
         c = zeros((3, Nd ** d))
         c[0, 0] = 1
@@ -105,8 +106,8 @@ def NCA(v, eps, u, temperature, lamb, t_max, N, dim_l, t_m, t_l):
             c[1, :] = copy(c[2, :])
         w_sp = linspace(-1, 1, nw)
         D = chebval(w_sp, mu) * (2 / pi) / sqrt(1 - w_sp ** 2)
-        w_sp = w_sp * a + b
-        D = D / a
+        w_sp = w_sp * d + b
+        D = D / d
         D = D * pi * t_mol ** 2
         return w_sp, D
 
@@ -293,21 +294,18 @@ def NCA(v, eps, u, temperature, lamb, t_max, N, dim_l, t_m, t_l):
         for i in range(4):
             for tn in range(N):
                 Pr[i, tn] = K[i, :, tn, tn] @ p0[:]
+    np.save("K", K)
+    np.save("P0", p0)
+    Z = zeros(N, complex)
+    for jt in range(N // 4):
+        temp_Z = 0
+        for i in range(4):
+            for j in range(4):
+                temp_Z += p0[i] * K[j, i, 0, jt]
+        Z[jt] = temp_Z
+    return Z
 
-    # Z = zeros(N, complex)
-    # for jt in range(N):
-    #     temp_Z = 0
-    #     for i in range(4):
-    #         for j in range(4):
-    #             temp_Z += p0[i] * K[j, i, jt, jt]
-    #     Z[jt] = temp_Z
-    return Pr
 
-
-y = NCA(1, 0, 5, 1, 0, 15, 500, 1, 1, 1)
-plt.plot(linspace(0, 8, len(y[0])), y[0], label='0')
-plt.plot(linspace(0, 8, len(y[0])), y[1], label='1')
-plt.plot(linspace(0, 8, len(y[0])), y[2], label='2')
-plt.plot(linspace(0, 8, len(y[0])), y[3], label='3')
-plt.legend()
+y = NCA(1, 0, 1, 0.1, 0, 20, 200, 1, 1, 1)
+plt.plot(linspace(0, 25, len(y)), log(y))
 plt.show()

@@ -19,7 +19,7 @@ E = (0, epsilon0, epsilon0, 2 * epsilon0 + U)
 # numerical parameters
 # N is number of time points index N is time zero
 
-t_max = 25  # numerical parameter for infinity
+t_max = 15  # numerical parameter for infinity
 N = 5000 * t_max  # number of time data points
 times = linspace(-t_max / 2, t_max / 2, N + 1)
 times_plus = linspace(0, t_max, N + 1)
@@ -143,7 +143,7 @@ def mid_term(vertex):
     temp_mat = zeros((4, N + 1), complex)
     temp_mat[0] = (vertex[1] + vertex[2]) * hL
     temp_mat[3] = (vertex[1] + vertex[2]) * hG
-    temp_mat[1] = vertex[0] * hG + vertex[3] * hL[2]
+    temp_mat[1] = vertex[0] * hG + vertex[3] * hL
     temp_mat[2] = temp_mat[1]
     return temp_mat
 
