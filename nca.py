@@ -137,11 +137,11 @@ def NCA(v, eps, u, temperature, lamb, t_max, N, dim_l, t_m, t_l):
         return 1 / (1 + exp(beta * (energy - mu)))
 
     def gamma(w_sp):
-        P = zeros(len(w_sp))
+        Pg = zeros(len(w_sp))
         for en in range(len(w_sp)):
             if abs(w_sp[en] - epsilon_lead) < (2 * t_l):
-                P[en] = (t_m ** 2 / (2 * t_l ** 2)) * sqrt(4 * t_l ** 2 - (w_sp[en] - epsilon_lead) ** 2)
-        return P
+                Pg[en] = (t_m ** 2 / (2 * t_l ** 2)) * sqrt(4 * t_l ** 2 - (w_sp[en] - epsilon_lead) ** 2)
+        return Pg
 
     gam_w = gamma(w)
 
@@ -294,8 +294,8 @@ def NCA(v, eps, u, temperature, lamb, t_max, N, dim_l, t_m, t_l):
         for i in range(4):
             for tn in range(N):
                 Pr[i, tn] = K[i, :, tn, tn] @ p0[:]
-    np.save("K", K)
-    np.save("P0", p0)
+    save("K", K)
+    save("P0", p0)
     Z = zeros(N, complex)
     for jt in range(N // 4):
         temp_Z = 0

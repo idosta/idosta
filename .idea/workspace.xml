@@ -2,12 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5e5d2bd5-c1c3-4abf-90fc-306722a8f319" name="Changes" comment="need to cal current">
-      <change afterPath="$PROJECT_DIR$/K.npy" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/P0.npy" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/fcs_eq_nca.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/#fcs_ss_nca.lyx#" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fcs_eq_nca.lyx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fcs_ss_nca.lyx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fcs_ss_nca.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/K" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/equalibrium_nca.py" beforeDir="false" afterPath="$PROJECT_DIR$/equalibrium_nca.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fcs_eq_nca.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/find_c.py" beforeDir="false" afterPath="$PROJECT_DIR$/find_c.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/nca.py" beforeDir="false" afterPath="$PROJECT_DIR$/nca.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -46,14 +47,14 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File" value="Python" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/extract_from_Z.py" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/nca.py" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/../c_run" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.equalibrium_nca">
+  <component name="RunManager" selected="Python.fcs_ss_nca">
     <configuration name="equalibrium_nca" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="idosta" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -75,7 +76,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="fcs_eq_nca" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="fcs_ss_nca" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="idosta" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -87,7 +88,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/fcs_eq_nca.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/fcs_ss_nca.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -96,7 +97,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="find_c" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="find_c (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="idosta" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -104,11 +105,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$APPLICATION_CONFIG_DIR$/scratches" />
-      <option name="IS_MODULE_SDK" value="false" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$APPLICATION_CONFIG_DIR$/scratches/find_c.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/find_c.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -161,11 +162,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.equalibrium_nca" />
-        <item itemvalue="Python.find_c" />
+        <item itemvalue="Python.fcs_ss_nca" />
+        <item itemvalue="Python.find_c (1)" />
         <item itemvalue="Python.scratch_4" />
-        <item itemvalue="Python.fcs_eq_nca" />
         <item itemvalue="Python.nca" />
+        <item itemvalue="Python.equalibrium_nca" />
       </list>
     </recent_temporary>
   </component>
@@ -199,7 +200,21 @@
       <option name="project" value="LOCAL" />
       <updated>1652099806243</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="need to cal current">
+      <created>1652789579028</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1652789579028</updated>
+    </task>
+    <task id="LOCAL-00005" summary="need to cal current">
+      <created>1652789737853</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1652789737853</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

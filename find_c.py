@@ -1,11 +1,10 @@
-import matplotlib.pyplot as plt
 from numpy import *
 from scipy.signal import fftconvolve
 from scipy.fftpack import fft, fftshift, ifftshift
 from scipy.sparse.linalg import eigsh
 import scipy.sparse as sp
 from numpy.polynomial.chebyshev import chebval
-
+import matplotlib.pyplot as plt
 
 def find_c(v, eps, u, temperature, lamb, t_max, N, dim_l, t_m, t_l, dif):
     def NCA(v, eps, u, temperature, lamb, t_max, N, dim_l, t_m, t_l):
@@ -292,6 +291,11 @@ def find_c(v, eps, u, temperature, lamb, t_max, N, dim_l, t_m, t_l, dif):
                 for tn in range(N):
                     Pr[i, tn] = K[i, :, tn, tn] @ p0[:]
         Z = zeros(N, complex)
+        plt.plot(times, Pr[0])
+        plt.plot(times, Pr[0].imag)
+        plt.plot(times, Pr[1])
+        plt.plot(times, Pr[1].imag)
+        plt.show()
         for jt in range(N // 4):
             temp_Z = 0
             for i in range(4):
@@ -299,8 +303,6 @@ def find_c(v, eps, u, temperature, lamb, t_max, N, dim_l, t_m, t_l, dif):
                     temp_Z += p0[i] * K[j, i, 0, jt]
             Z[jt] = temp_Z
         return Z, K, times, G, p0, hl, hg
-
-    v, eps, u, temperature, lamb, t_max, N, dim_l, t_m, t_l = 1, 0, 1, 0.1, 0, 20, 200, 1, 1, 1
 
     nca = NCA(v, eps, u, temperature, lamb, t_max, N, dim_l, t_m, t_l)
     K, times, p0 = nca[1], nca[2], nca[4]
@@ -316,3 +318,6 @@ def find_c(v, eps, u, temperature, lamb, t_max, N, dim_l, t_m, t_l, dif):
     c = log(z_diff[dif // 2, -1] / z_diff[dif // 2 - 1, -1]) / (times[N // dif] - times[0])
     return c, nca
 
+
+v, eps, u, temperature, lamb, t_max, N, dim_l, t_m, t_l, dif = 1, 0, 1, 0.1, 0, 20, 200, 1, 1, 1, 50
+print(find_c(v, eps, u, temperature, lamb, t_max, N, dim_l, t_m, t_l, dif)[0])
