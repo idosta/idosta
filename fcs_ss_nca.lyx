@@ -79,26 +79,100 @@
 Full Counting Statistics in Steady State NCA
 \end_layout
 
-\begin_layout Standard
+\begin_layout Author
+Ido Zemach
+\end_layout
 
+\begin_layout Section
+NCA equations to find the Vertex function
+\end_layout
+
+\begin_layout Subsection
+non equlibrium 
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula $K_{\alpha}^{\beta}(t_{max}+t,t_{max})=G_{\delta}^{*}(t+t_{max})*G_{\beta}(t_{max})+\sum_{\gamma\delta}\int_{0}^{t_{max}+t}d\tau G_{\delta}^{*}(t+t_{max}-\tau)\intop_{0}^{t_{max}}d\tau`G_{\beta}(t_{max}-\tau`)\xi_{\gamma}^{\delta}(\tau-\tau`)K_{\alpha}^{\delta}(\tau,\tau`)$
+NCA is a self-consistent, lowest order perturbative expansion in the dot–lead
+ coupling, which only account for contributions that have a diagrammatic
+ representation in which the hybridization lines do not cross.
+\end_layout
+
+\begin_layout Standard
+The method alows to calculate the vertex function, 
+\begin_inset Formula $K_{\alpha}^{\beta}\left(t,t'\right)=Tr_{B}\left\{ \rho_{B}\left\langle \alpha\left|U^{\dagger}\left(t\right)\right|\beta\right\rangle \left\langle \beta\left|U\left(t'\right)\right|\alpha\right\rangle \right\} $
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+which later can be used to find observables, 
+\begin_inset Formula $\left\langle A\left(t\right)\right\rangle =\underset{\alpha}{\sum}K_{\alpha}^{\beta}\left(t,t'\right)\left\langle \beta\left|A\right|\beta\right\rangle $
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+By perturbatively expanding in the dot–lead coupling, the vertex function
+ is expressed in a Dyson equation:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+K_{\alpha}^{\beta}\left(t,t'\right)=k_{\alpha}^{\beta}\left(t,t'\right)+\underset{\delta\gamma}{\sum}\stackrel[0]{t}{\int}\stackrel[0]{t'}{\int}\mathrm{d}\tau\mathrm{d}\tau'k_{\delta}^{\beta}\left(t-\tau,t'-\tau'\right)\xi_{\gamma}^{\delta}\left(\tau-\tau'\right)K_{\alpha}^{\gamma}\left(\tau,\tau'\right).
+\]
+
 \end_inset
 
 
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula $t_{max}\rightarrow0\Rightarrow G_{*}(t_{max})\rightarrow0$
+....
+\end_layout
+
+\begin_layout Subsection
+Full Counting Statistics
+\end_layout
+
+\begin_layout Subsection
+Steady State NCA
+\end_layout
+
+\begin_layout Standard
+Under the assumption that at steady state the vertex function depends only
+ on the difference between its two time arguments, and the initial state
+ does not matter,
+\begin_inset Formula $K_{\alpha}^{\beta}\left(t,t'\right)\underset{t,t'\rightarrow\infty}{\rightarrow}K^{\beta}\left(t-t'\right)$
+\end_inset
+
+.
+ the vertex function at steady state must obey:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+K^{\beta}\left(t\right)=\intop_{-\infty}^{t}d\tau\intop_{\tau}^{\infty}d\Delta G_{\beta}^{*}\left(t-\tau\right)G_{\beta}\left(\Delta-\tau\right)\sum_{\gamma}\xi_{\gamma}^{\beta}\left(\Delta\right)K^{\gamma}\left(\Delta\right)
+\]
+
 \end_inset
 
 
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula $\sum_{\alpha,\beta}K_{\alpha}^{\beta}(t_{a}+t,t_{a})=\sum_{\alpha,\beta}K_{\alpha}^{\beta}(t_{b}+t,t_{b})*e^{(t_{b}-t_{a})*c}$
+
+\end_layout
+
+\begin_layout Part*
+2 Full Counting Statistics for steady state equation
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\sum_{\alpha,\beta}K_{\alpha}^{\beta}(t_{a}+t,t_{a})=\sum_{\alpha,\beta}K_{\alpha}^{\beta}(t_{b}+t,t_{b})\cdot e^{c\left(t_{b}-t_{a}\right)}$
 \end_inset
 
 
@@ -133,7 +207,7 @@ Full Counting Statistics in Steady State NCA
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula $=\sum_{\gamma\delta}\int_{-t_{max}}^{t}d\tau_{1}G_{\delta}^{*}(t-\tau_{1})\intop_{-t_{max}-\tau_{1}}^{-\tau_{1}}d\varLambda G_{\beta}(-\varLambda-\tau_{1})\xi_{\gamma}^{\delta}(\varLambda){}^{*}*K_{\alpha}^{\delta}(t_{max}+\varLambda(,t_{max})*e^{c*(\tau_{1}-\varLambda)}$
+\begin_inset Formula $=\sum_{\gamma\delta}\int_{-t_{max}}^{t}d\tau_{1}G_{\delta}^{*}(t-\tau_{1})\intop_{-t_{max}-\tau_{1}}^{-\tau_{1}}d\varLambda G_{\beta}(-\varLambda-\tau_{1})\xi_{\gamma}^{\delta}(\varLambda){}^{*}*K_{\alpha}^{\delta}(t_{max}+\varLambda,t_{max})*e^{c*(\tau_{1}-\varLambda)}$
 \end_inset
 
 
@@ -162,6 +236,20 @@ Full Counting Statistics in Steady State NCA
 
 \begin_layout Standard
 \begin_inset Formula $=\sum_{\gamma\delta}G_{\delta}^{*}\star(f_{c}*H_{\beta\alpha\gamma\delta})(t)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Self consistency:
+\begin_inset Formula 
+\[
+\begin{aligned}K_{\alpha}^{\beta}\left(t_{\text{max}}+t,t_{\text{max}}\right) & =\sum_{\gamma\delta}\int_{-t_{max}}^{t}d\tau_{1}G_{\delta}^{*}\left(t-\tau_{1}\right)\\
+ & \intop_{\tau_{1}}^{t_{max}+\tau_{1}}d\Delta G_{\beta}\left(\Delta-\tau_{1}\right)\xi_{\gamma}^{\delta}\left(\Delta\right)K_{\alpha}^{\delta}\left(t_{max}+\tau_{1},t_{max}+\tau_{1}-\Delta\right)
+\end{aligned}
+\]
+
 \end_inset
 
 

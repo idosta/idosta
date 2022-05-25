@@ -296,16 +296,26 @@ def NCA(v, eps, u, temperature, lamb, t_max, N, dim_l, t_m, t_l):
                 Pr[i, tn] = K[i, :, tn, tn] @ p0[:]
     save("K", K)
     save("P0", p0)
-    Z = zeros(N, complex)
-    for jt in range(N // 4):
+    Z = zeros((2, N//2 ), complex)
+    for jt in range(N//2):
         temp_Z = 0
         for i in range(4):
             for j in range(4):
-                temp_Z += p0[i] * K[j, i, 0, jt]
-        Z[jt] = temp_Z
+                temp_Z += p0[i] * K[j, i, jt, jt]
+        Z[0, jt] = temp_Z
+    for jt in range(N // 2, N):
+        temp_Z = 0
+        for i in range(4):
+            for j in range(4):
+                temp_Z += p0[i] * K[j, i, jt, jt]
+        Z[1, jt - N//2] = temp_Z
     return Z
 
 
-y = NCA(1, 0, 1, 0.1, 0, 20, 200, 1, 1, 1)
-plt.plot(linspace(0, 25, len(y)), log(y))
+y = NCA(1, 0, 1, 0.1, 1j, 20, 200, 1, 1, 1)
+plt.plot(linspace(0, 10, len(y[0])), log(y[0]))
+plt.plot(linspace(0, 10, len(y[1])), log(y[1]))
+plt.show()
+plt.plot(linspace(0, 10, len(y[0])), log(y[0]).imag)
+plt.plot(linspace(0, 10, len(y[1])), log(y[1]).imag)
 plt.show()

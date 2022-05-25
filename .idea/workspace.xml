@@ -3,11 +3,10 @@
   <component name="ChangeListManager">
     <list default="true" id="5e5d2bd5-c1c3-4abf-90fc-306722a8f319" name="Changes" comment="need to cal current">
       <change afterPath="$PROJECT_DIR$/#fcs_ss_nca.lyx#" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/fcs_eq_nca.lyx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/fcs_ss_nca.lyx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/fcs_ss_nca.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fcs_eq_nca.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/K.npy" beforeDir="false" afterPath="$PROJECT_DIR$/K.npy" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fcs_ss_nca.lyx" beforeDir="false" afterPath="$PROJECT_DIR$/fcs_ss_nca.lyx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fcs_ss_nca.py" beforeDir="false" afterPath="$PROJECT_DIR$/fcs_ss_nca.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/find_c.py" beforeDir="false" afterPath="$PROJECT_DIR$/find_c.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/nca.py" beforeDir="false" afterPath="$PROJECT_DIR$/nca.py" afterDir="false" />
     </list>
@@ -54,7 +53,7 @@
       <recent name="$PROJECT_DIR$/../c_run" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.fcs_ss_nca">
+  <component name="RunManager" selected="Python.nca">
     <configuration name="equalibrium_nca" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="idosta" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -162,10 +161,10 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.fcs_ss_nca" />
-        <item itemvalue="Python.find_c (1)" />
-        <item itemvalue="Python.scratch_4" />
         <item itemvalue="Python.nca" />
+        <item itemvalue="Python.find_c (1)" />
+        <item itemvalue="Python.fcs_ss_nca" />
+        <item itemvalue="Python.scratch_4" />
         <item itemvalue="Python.equalibrium_nca" />
       </list>
     </recent_temporary>

@@ -3,7 +3,7 @@ from numpy import *
 from scipy.signal import fftconvolve
 from scipy.fftpack import fft, fftshift, ifftshift
 
-v, eps, u, temperature, lamb, t_max, dim_l, t_m, t_l = 1, 0, 0.2, 1, 0, 15, 1, 1, 1
+v, eps, u, temperature, lamb, t_max, dim_l, t_m, t_l = 1, 0, 0.2, 1, 0, 5, 1, 1, 1
 ga = (t_m ** 2) / t_l
 epsilon_lead = 0 * ga  # adding elctron energy on the lead
 beta = 1.0 / (ga * temperature)
@@ -257,17 +257,24 @@ def update_vertex(V):
 
 K0 = zeros((4, 4, N + 1), complex)
 for i in range(4):
-    for j1 in range(N + 1):
-        K0[i, i, j1] = conj(G[i, j1]) * G[i, N]
+    for j1 in range(N // 2, N + 1):
+        # K0[i, i, j1] = conj(G[i, N // 2]) * G[i, j1]
+        K0[i, i, j1 - N // 2] = K[i, i, j1, N // 2]
     K0[i, i, :] = conj_maker(K0[i, i, :])
 K = copy(K0)
 delta_K = d_dyson + 1
 C = 0
+plt.plot(times, K[1, 1, :])
+plt.plot(times, K[0, 0, :])
+plt.show()
 while delta_K > d_dyson:
     K_old = copy(K)
     print('K iteration number', C, 'with delta K', delta_K)
     newK = update_vertex(mid_term(K_old))
     K = (1 - a) * newK + a * K
+    plt.plot(times, K[1, 1, :])
+    plt.plot(times, K[0, 0, :])
+    plt.show()
     delta_K = amax(abs(K - K_old))
     C += 1
 

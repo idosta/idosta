@@ -291,11 +291,11 @@ def find_c(v, eps, u, temperature, lamb, t_max, N, dim_l, t_m, t_l, dif):
                 for tn in range(N):
                     Pr[i, tn] = K[i, :, tn, tn] @ p0[:]
         Z = zeros(N, complex)
-        plt.plot(times, Pr[0])
-        plt.plot(times, Pr[0].imag)
-        plt.plot(times, Pr[1])
-        plt.plot(times, Pr[1].imag)
-        plt.show()
+        # plt.plot(times, Pr[0])
+        # plt.plot(times, Pr[0].imag)
+        # plt.plot(times, Pr[1])
+        # plt.plot(times, Pr[1].imag)
+        # plt.show()
         for jt in range(N // 4):
             temp_Z = 0
             for i in range(4):
@@ -319,5 +319,5 @@ def find_c(v, eps, u, temperature, lamb, t_max, N, dim_l, t_m, t_l, dif):
     return c, nca
 
 
-v, eps, u, temperature, lamb, t_max, N, dim_l, t_m, t_l, dif = 1, 0, 1, 0.1, 0, 20, 200, 1, 1, 1, 50
+v, eps, u, temperature, lamb, t_max, N, dim_l, t_m, t_l, dif = 1, 0, 1, 0.1, 1j, 20, 200, 1, 1, 1, 50
 print(find_c(v, eps, u, temperature, lamb, t_max, N, dim_l, t_m, t_l, dif)[0])
