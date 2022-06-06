@@ -3,7 +3,7 @@ from numpy import *
 from scipy.signal import fftconvolve
 from scipy.fftpack import fft, fftshift, ifftshift
 
-v, eps, u, temperature, lamb, t_max, dim_l, t_m, t_l = 1, 0, 0.2, 1, 0, 5, 1, 1, 1
+v, eps, u, temperature, lamb, t_max, dim_l, t_m, t_l = 1, 0, 0.2, 1, 1, 15, 1, 1, 1
 ga = (t_m ** 2) / t_l
 epsilon_lead = 0 * ga  # adding elctron energy on the lead
 beta = 1.0 / (ga * temperature)
@@ -194,95 +194,96 @@ Pr = zeros((4, N + 1), complex)
 for i in range(4):
     for tn in range(N + 1):
         Pr[i, tn] = K[i, :, tn, tn] @ p0[:]
-plt.plot(times, Pr[0])
-plt.plot(times, Pr[0].imag)
-plt.plot(times, Pr[1])
-plt.plot(times, Pr[1].imag)
+Z = Pr[0] + Pr[1] + Pr[2] + Pr[3]
+plt.plot(times, Z)
+plt.plot(times, log(Z).imag)
+# plt.plot(times, Pr[1])
+# plt.plot(times, Pr[1].imag)
 plt.show()
-
-c = log(sum(K[:, 0, 9 * N // 10, N]) / sum(K[:, 0, 8 * N // 10, 9 * N // 10])) / (
-        times[9 * N // 10] - times[8 * N // 10])
-print(c)
-
-#  steady state NCA
-M = N
-
-
-def build_negative_times(y):
-    full_time = linspace(-t_max, t_max, 2 * M - 1)
-    z = zeros(2 * M - 1, complex)
-    z[M - 1:] = y
-    z[:M] = conj(y[::-1])
-    return full_time, z
-
-
-def conj_maker(A):
-    hA = A[:M // 2 + 1]
-    F = zeros(M + 1, complex)
-    F[N // 2:] = copy(hA)
-    F[:N // 2 + 1] = copy(conj(hA[::-1]))
-    return F
-
-
-times = linspace(-t_max / 2, t_max / 2, N + 1)
-hL = conj_maker(hl[2])
-hG = conj_maker(hg[2])
-
-
-def cf(time, co):
-    return exp(co * time)
-
-
-def mid_term(vertex):
-    # this term is the multiplication of the hybridization function and the vertex function
-    temp_mat = zeros((4, 4, N + 1), complex)
-    temp_mat[:, 0] = (vertex[:, 1] + vertex[:, 2]) * hL * cf(times, -c)
-    temp_mat[:, 3] = (vertex[:, 1] + vertex[:, 2]) * hG * cf(times, -c)
-    temp_mat[:, 1] = vertex[:, 0] * hG + vertex[:, 3] * hL * cf(times, -c)
-    temp_mat[:, 2] = temp_mat[:, 1] * cf(times, -c)
-    return temp_mat
-
-
-def update_vertex(V):
-    A = zeros((4, 4, 4, N + 1), complex)
-    B = zeros((4, 4, N + 1), complex)
-    for bet in range(4):
-        for alpha in range(4):
-            for de in range(4):
-                A[bet, alpha, de] = fft_integral(G[bet, :], V[de, alpha, :])
-                AR = copy(A[:, :, :, ::-1]) * cf(times, c)
-                B[bet, alpha] += fft_integral(conj(G[de, :]), AR[bet, alpha, de, :])
-    return B
-
-
-K0 = zeros((4, 4, N + 1), complex)
-for i in range(4):
-    for j1 in range(N // 2, N + 1):
-        # K0[i, i, j1] = conj(G[i, N // 2]) * G[i, j1]
-        K0[i, i, j1 - N // 2] = K[i, i, j1, N // 2]
-    K0[i, i, :] = conj_maker(K0[i, i, :])
-K = copy(K0)
-delta_K = d_dyson + 1
-C = 0
-plt.plot(times, K[1, 1, :])
-plt.plot(times, K[0, 0, :])
-plt.show()
-while delta_K > d_dyson:
-    K_old = copy(K)
-    print('K iteration number', C, 'with delta K', delta_K)
-    newK = update_vertex(mid_term(K_old))
-    K = (1 - a) * newK + a * K
-    plt.plot(times, K[1, 1, :])
-    plt.plot(times, K[0, 0, :])
-    plt.show()
-    delta_K = amax(abs(K - K_old))
-    C += 1
-
-
-plt.plot(times, K[0], label='0')
-plt.plot(times, K[1], label='1')
-plt.plot(times, K[2].imag, label='1i')
-plt.plot(times, K[3].imag, label='0i')
-plt.legend()
-plt.show()
-print(K[0, N // 2], K[1, N // 2], K[2, N // 2], K[3, N // 2])
+#
+# c = log(sum(K[:, 0, 9 * N // 10, N]) / sum(K[:, 0, 8 * N // 10, 9 * N // 10])) / (
+#         times[9 * N // 10] - times[8 * N // 10])
+# print(c)
+#
+# #  steady state NCA
+# M = N
+#
+#
+# def build_negative_times(y):
+#     full_time = linspace(-t_max, t_max, 2 * M - 1)
+#     z = zeros(2 * M - 1, complex)
+#     z[M - 1:] = y
+#     z[:M] = conj(y[::-1])
+#     return full_time, z
+#
+#
+# def conj_maker(A):
+#     hA = A[:M // 2 + 1]
+#     F = zeros(M + 1, complex)
+#     F[N // 2:] = copy(hA)
+#     F[:N // 2 + 1] = copy(conj(hA[::-1]))
+#     return F
+#
+#
+# times = linspace(-t_max / 2, t_max / 2, N + 1)
+# hL = conj_maker(hl[2])
+# hG = conj_maker(hg[2])
+#
+#
+# def cf(time, co):
+#     return exp(co * time)
+#
+#
+# def mid_term(vertex):
+#     # this term is the multiplication of the hybridization function and the vertex function
+#     temp_mat = zeros((4, 4, N + 1), complex)
+#     temp_mat[:, 0] = (vertex[:, 1] + vertex[:, 2]) * hL * cf(times, -c)
+#     temp_mat[:, 3] = (vertex[:, 1] + vertex[:, 2]) * hG * cf(times, -c)
+#     temp_mat[:, 1] = vertex[:, 0] * hG + vertex[:, 3] * hL * cf(times, -c)
+#     temp_mat[:, 2] = temp_mat[:, 1] * cf(times, -c)
+#     return temp_mat
+#
+#
+# def update_vertex(V):
+#     A = zeros((4, 4, 4, N + 1), complex)
+#     B = zeros((4, 4, N + 1), complex)
+#     for bet in range(4):
+#         for alpha in range(4):
+#             for de in range(4):
+#                 A[bet, alpha, de] = fft_integral(G[bet, :], V[de, alpha, :])
+#                 AR = copy(A[:, :, :, ::-1]) * cf(times, c)
+#                 B[bet, alpha] += fft_integral(conj(G[de, :]), AR[bet, alpha, de, :])
+#     return B
+#
+#
+# K0 = zeros((4, 4, N + 1), complex)
+# for i in range(4):
+#     for j1 in range(N // 2, N + 1):
+#         # K0[i, i, j1] = conj(G[i, N // 2]) * G[i, j1]
+#         K0[i, i, j1 - N // 2] = K[i, i, j1, N // 2]
+#     K0[i, i, :] = conj_maker(K0[i, i, :])
+# K = copy(K0)
+# delta_K = d_dyson + 1
+# C = 0
+# plt.plot(times, K[1, 1, :])
+# plt.plot(times, K[0, 0, :])
+# plt.show()
+# while delta_K > d_dyson:
+#     K_old = copy(K)
+#     print('K iteration number', C, 'with delta K', delta_K)
+#     newK = update_vertex(mid_term(K_old))
+#     K = (1 - a) * newK + a * K
+#     plt.plot(times, K[1, 1, :])
+#     plt.plot(times, K[0, 0, :])
+#     plt.show()
+#     delta_K = amax(abs(K - K_old))
+#     C += 1
+#
+#
+# plt.plot(times, K[0], label='0')
+# plt.plot(times, K[1], label='1')
+# plt.plot(times, K[2].imag, label='1i')
+# plt.plot(times, K[3].imag, label='0i')
+# plt.legend()
+# plt.show()
+# print(K[0, N // 2], K[1, N // 2], K[2, N // 2], K[3, N // 2])

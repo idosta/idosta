@@ -201,12 +201,12 @@ def NCA(v, eps, u, temperature, lamb, t_max, N, dim_l, t_m, t_l):
         SE = update_self_energy(N, G)
         delta_G = amax(abs(G - G_old))
         C += 1
-    plt.plot(times, G[0].imag, label='0i')
-    plt.plot(times, G[1].imag, label='1i')
-    plt.plot(times, G[2], label='1')
-    plt.plot(times, G[3], label='0')
-    plt.legend()
-    plt.show()
+    # plt.plot(times, G[0].imag, label='0i')
+    # plt.plot(times, G[1].imag, label='1i')
+    # plt.plot(times, G[2], label='1')
+    # plt.plot(times, G[3], label='0')
+    # plt.legend()
+    # plt.show()
 
     # calculating v
 
@@ -287,35 +287,48 @@ def NCA(v, eps, u, temperature, lamb, t_max, N, dim_l, t_m, t_l):
     p0 = zeros(4)
     for i in range(4):
         p0[i] = exp(-E[i] * beta)
-    p0 = p0 / sum(p0)
+    P0 = p0 / sum(p0)
+    save("K", K)
+    save("P", P0)
 
     if lamb == 0:
         Pr = zeros((4, N), complex)
-        for i in range(4):
+        for i in range(1):
             for tn in range(N):
                 Pr[i, tn] = K[i, :, tn, tn] @ p0[:]
-    save("K", K)
-    save("P0", p0)
-    Z = zeros((2, N//2 ), complex)
+    Z = zeros((2, N//2), complex)
     for jt in range(N//2):
         temp_Z = 0
-        for i in range(4):
-            for j in range(4):
-                temp_Z += p0[i] * K[j, i, jt, jt]
+        for j in range(4):
+            temp_Z += P0[:] @ K[j, :, 0, jt]
         Z[0, jt] = temp_Z
     for jt in range(N // 2, N):
         temp_Z = 0
-        for i in range(4):
-            for j in range(4):
-                temp_Z += p0[i] * K[j, i, jt, jt]
+        for j in range(4):
+            temp_Z += P0[:] @ K[j, :, N//2, jt]
         Z[1, jt - N//2] = temp_Z
     return Z
 
 
-y = NCA(1, 0, 1, 0.1, 1j, 20, 200, 1, 1, 1)
-plt.plot(linspace(0, 10, len(y[0])), log(y[0]))
-plt.plot(linspace(0, 10, len(y[1])), log(y[1]))
+y = NCA(0.5, 1, 1, 0.1, 0.1j, 20, 350, 1, 1, 1)
+c = log(y[1, -1] / y[0, -1]) / 10
+r = log(y[1, 99] / y[1, 49]) / 5
+print("c=", c, "r=", r)
+# r = NCA(0.5, 1, 1, 0.1, 0, 20, 200, 1, 1, 1)
+# w = NCA(0.5, 1, 1, 0.1, -0.1j, 20, 200, 1, 1, 1)
+plt.plot(linspace(0, 20, len(y[0])), log(y[0]), label="0.1")
+plt.plot(linspace(0, 20, len(y[1])), log(y[1]), label="0.1")
+# plt.plot(linspace(0, 20, len(r[0])), log(r[0]), label="0")
+# plt.plot(linspace(0, 20, len(r[1])), log(r[1]), label="0")
+# plt.plot(linspace(0, 20, len(w[0])), log(w[0]), label="-0.1")
+# plt.plot(linspace(0, 20, len(w[1])), log(w[1]), label="-0.1")
+plt.legend()
 plt.show()
-plt.plot(linspace(0, 10, len(y[0])), log(y[0]).imag)
-plt.plot(linspace(0, 10, len(y[1])), log(y[1]).imag)
+plt.plot(linspace(0, 20, len(y[0])), log(y[0]).imag, label="0.1")
+plt.plot(linspace(0, 20, len(y[1])), log(y[1]).imag, label="0.1")
+# plt.plot(linspace(0, 20, len(r[0])), log(r[0]).imag, label="0")
+# plt.plot(linspace(0, 20, len(r[1])), log(r[1]).imag, label="0")
+# plt.plot(linspace(0, 20, len(w[0])), log(w[0]).imag, label="-0.1")
+# plt.plot(linspace(0, 20, len(w[1])), log(w[1]).imag, label="-0.1")
+plt.legend()
 plt.show()
