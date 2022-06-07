@@ -322,7 +322,11 @@ K^{\beta}\left(t_{a}+t,t_{a}\right)\sim e^{rt}
 \end_layout
 
 \begin_layout Standard
-plug in 
+the general idea of the self consistency algorithm is:
+\end_layout
+
+\begin_layout Enumerate
+Plug in 
 \begin_inset Formula $t'=0$
 \end_inset
 
@@ -336,10 +340,11 @@ noprefix "false"
 
 \end_inset
 
-:
-\end_layout
+, and find 
+\begin_inset Formula $K_{\alpha}^{\beta}\left(t,0\right)$
+\end_inset
 
-\begin_layout Standard
+ using NCA,
 \begin_inset Formula 
 \begin{equation}
 K_{\alpha}^{\beta}\left(t,0\right)=k_{\alpha}^{\beta}\left(t,0\right)+\stackrel[0]{t}{\int}\mathrm{d}\tau G_{\alpha}^{*}\left(t\right)G_{\beta}\left(\tau\right)\xi_{\gamma}^{\delta}\left(\tau\right)K_{\alpha}^{\gamma}\left(\tau,0\right)\label{eq:first_step}
@@ -350,10 +355,10 @@ K_{\alpha}^{\beta}\left(t,0\right)=k_{\alpha}^{\beta}\left(t,0\right)+\stackrel[
 
 \end_layout
 
-\begin_layout Standard
-In equations 
+\begin_layout Enumerate
+Use relation 
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand formatted
 reference "eq:vertex_time_scaling"
 plural "false"
 caps "false"
@@ -361,56 +366,10 @@ noprefix "false"
 
 \end_inset
 
-,
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:first_step"
-plural "false"
-caps "false"
-noprefix "false"
-
-\end_inset
-
- all the system information exist, but to find 
-\begin_inset Formula $w$
-\end_inset
-
-another step need to be done.
-\end_layout
-
-\begin_layout Standard
-Section 3 show the validity of equation 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:ss_wo_counting_field"
-plural "false"
-caps "false"
-noprefix "false"
-
-\end_inset
-
-, therefore by modifying the hybridization function to include the counting
- field and inserting the vertex function shape found in 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:first_step"
-plural "false"
-caps "false"
-noprefix "false"
-
-\end_inset
-
-, the correct 
-\begin_inset Formula $w$
-\end_inset
-
-can be find self consistently.
-\end_layout
-
-\begin_layout Standard
+ to find the two times vertex function in all times,
 \begin_inset Formula 
 \[
-K_{t_{m}}^{\beta}\left(t\right)=e^{wt_{m}}\sum_{\alpha}K_{\alpha}^{\beta}\left(t,0\right)
+\sum_{\alpha}K_{\alpha}^{\beta}\left(t_{a}+t,t_{a}\right)=\sum_{\alpha}K_{\alpha}^{\beta}\left(t,0\right)\cdot e^{-wt_{a}}
 \]
 
 \end_inset
@@ -418,15 +377,40 @@ K_{t_{m}}^{\beta}\left(t\right)=e^{wt_{m}}\sum_{\alpha}K_{\alpha}^{\beta}\left(t
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Enumerate
+Insert two times (choose smartly) to equations 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "eq:vertex_dyson"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, and
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "eq:vertex_time_scaling"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ to find the equation on w,
 \begin_inset Formula 
 \[
-e^{wt_{m}}\sum_{\alpha}K_{\alpha}^{\beta}\left(t,0\right)=\intop_{-t_{m}}^{t}d\tau\intop_{\tau}^{t_{m}}d\Delta G_{\beta}^{*}\left(t-\tau\right)G_{\beta}\left(\Delta-\tau\right)\sum_{\gamma}\xi_{\gamma}^{\beta}\left(\Delta\right)K_{t_{m}}^{\gamma}\left(\Delta\right)
+w=-\frac{1}{t}log\left(\frac{\sum_{\alpha}\left(k_{\alpha}^{\beta}\left(t,t'\right)+\underset{\delta\gamma}{\sum}\stackrel[0]{t}{\int}\stackrel[0]{t'}{\int}\mathrm{d}\tau\mathrm{d}\tau'k_{\delta}^{\beta}\left(t-\tau,t'-\tau'\right)\xi_{\gamma}^{\delta}\left(\tau-\tau'\right)K_{\alpha}^{\gamma}\left(\tau,\tau'\right)\right)}{\sum_{\alpha}K_{\alpha}^{\beta}\left(t-t',0\right)}\right)
 \]
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Enumerate
+repeat stages 2 and 3 until w does not change.
 \end_layout
 
 \end_body
