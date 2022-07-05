@@ -1,15 +1,6 @@
 import matplotlib.pyplot as plt
-from numpy import *
-from scipy.signal import fftconvolve
-from scipy.fftpack import fft, fftshift, ifftshift
-from scipy.sparse.linalg import eigsh
-import scipy.sparse as sp
-from numpy.polynomial.chebyshev import chebval
-
-
-
-# dot state description (0, down, up, 1)
-# physical parameters 1
+from functions import *
+import time
 
 
 def NCA(v, eps, u, temperature, lamb, t_max, N, dim_l, t_m, t_l):
@@ -30,177 +21,54 @@ def NCA(v, eps, u, temperature, lamb, t_max, N, dim_l, t_m, t_l):
     n_cheb = 300  # number of coefficients
     N_lead = 1000  # number of sites in the lead
     N_w = 1000  # number of energy points
-    dt = t_max / (N - 1)
-    times = linspace(0, t_max, N)
-    cutoff_factor = 10
+    dt = t_max / N
+    times = linspace(0, t_max, N + 1)
+    cutoff_factor = 1000
     dw = 0.01 * t_l
     w = arange(-ec * cutoff_factor, ec * cutoff_factor, dw)
     d_dyson = 1e-7
+    slice = 6
 
-    def gen_hyb(dim, t_mol, t_lead, epsilon, NU, n_c, nw):
-        # NU = number of sites
-        Nd = int(NU ** (1 / dim))
+    gam_w = gamma(w, epsilon_lead, t_l, t_m)
 
-        def build_h_3d(n, ep, tb):
-            hamiltonian = sp.lil_matrix((n ** 3, n ** 3))
-            for s in range(n ** 3):
-                hamiltonian[s, s] = ep
-                if s % Nd != 0:  # nearest in same row
-                    hamiltonian[s - 1, s] = tb
-                    hamiltonian[s, s - 1] = tb
-                if s - Nd + 1 > 0:  # previous row
-                    hamiltonian[s, s - Nd] = tb
-                    hamiltonian[s - Nd, s] = tb
-                if s - Nd ** 2 + 1 > 0:  # previous plane
-                    hamiltonian[s, s - Nd ** 2] = tb
-                    hamiltonian[s - Nd ** 2, s] = tb
-            return hamiltonian.tocsr()
-
-        def build_h_2d(n, ep, tb):
-            hamiltonian = sp.lil_matrix((n ** 2, n ** 2))
-            for s in range(n ** 2):
-                hamiltonian[s, s] = ep
-                if s % Nd != 0:  # nearest in same row
-                    hamiltonian[s - 1, s] = tb
-                    hamiltonian[s, s - 1] = tb
-                if s - Nd + 1 > 0:  # previous row
-                    hamiltonian[s, s - Nd] = tb
-                    hamiltonian[s - Nd, s] = tb
-            return hamiltonian.tocsr()
-
-        def build_h_1d(n, ep, tb):
-            hamiltonian = sp.lil_matrix((n, n))
-            for s in range(n):
-                hamiltonian[s, s] = ep
-            for s in range(n - 1):
-                hamiltonian[s, s + 1] = tb
-                hamiltonian[s + 1, s] = tb
-            return hamiltonian.tocsr()
-
-        def build_h(n, ep, t_le):
-            if dim == 1:
-                return build_h_1d(n, ep, t_le), dim
-            if dim == 2:
-                return build_h_2d(n, ep, t_le), dim
-            if dim == 3:
-                return build_h_3d(n, ep, t_le), dim
-
-        H, d = build_h(Nd, epsilon, t_lead)
-        E_max = float(eigsh(H, 1, which='LA', return_eigenvectors=False))
-        E_min = float(eigsh(H, 1, which='SA', return_eigenvectors=False))
-        d = (E_max - E_min) / 2
-        b = (E_max + E_min) / 2
-        H, d = build_h(Nd, (epsilon - b) / d, t_lead / d)
-
-        c = zeros((3, Nd ** d))
-        c[0, 0] = 1
-        cz = copy(c[0, :])
-        c[1] = H @ c[0]
-        mu = zeros(n_c)
-        mu[0] = 0.5
-        mu[1] = c[0, :] @ c[1, :]
-        for ic in range(2, n_c):
-            c[2, :] = 2 * H @ c[1, :] - c[0, :]
-            mu[ic] = cz @ c[2, :]
-            c[0, :] = copy(c[1, :])
-            c[1, :] = copy(c[2, :])
-        w_sp = linspace(-1, 1, nw)
-        D = chebval(w_sp, mu) * (2 / pi) / sqrt(1 - w_sp ** 2)
-        w_sp = w_sp * d + b
-        D = D / d
-        D = D * pi * t_mol ** 2
-        return w_sp, D
-
-    # define mathematical functions
-    def fft_integral(x, y):
-        temp = (fftconvolve(x, y)[:N] - 0.5 * (x[:N] * y[0] + x[0] * y[:N])) * dt
-        temp[N:] = 0
-        return temp
-
-    def integral_green(bare_green, self_energy, old_green):
-        total23, total21 = fft_integral(self_energy, old_green), fft_integral(self_energy, bare_green)
-        return 0.5 * (fft_integral(bare_green, total23) + fft_integral(old_green, total21))
-
-    # def gamma(energy):
-    #     return 0.5 * ga / ((1 + exp(nu * (energy - ec))) * (1 + exp(-nu * (energy + ec))))
-
-    def gamma_c(energy):
-        gam = gen_hyb(dim_l, t_m, t_l, 0, N_lead, n_cheb, N_w)
-        y = zeros(len(energy))
-        for en in range(len(energy)):
-            if min(gam[0]) < energy[en] < max(gam[0]):
-                ind = argmin(abs(gam[0] - energy[en]))
-                y[en] = gam[1][ind]
-        return y
-
-    def f(energy, mu):
-        return 1 / (1 + exp(beta * (energy - mu)))
-
-    def gamma(w_sp):
-        Pg = zeros(len(w_sp))
-        for en in range(len(w_sp)):
-            if abs(w_sp[en] - epsilon_lead) < (2 * t_l):
-                Pg[en] = (t_m ** 2 / (2 * t_l ** 2)) * sqrt(4 * t_l ** 2 - (w_sp[en] - epsilon_lead) ** 2)
-        return Pg
-
-    gam_w = gamma(w)
-
-    delta_l_energy = [gam_w * f(w, miu[0]), gam_w * f(w, miu[1])]
-    delta_g_energy = [gam_w * (1 - f(w, miu[0])), gam_w * (1 - f(w, miu[1]))]
+    delta_l_energy = [gam_w * f(w, beta, miu[0]), gam_w * f(w, beta, miu[1])]
+    delta_g_energy = [gam_w * (1 - f(w, beta, miu[0])), gam_w * (1 - f(w, beta, miu[1]))]
 
     delta_l_temp = [ifftshift(fft(fftshift(delta_l_energy[0]))) * dw / pi,
                     ifftshift(fft(fftshift(delta_l_energy[1]))) * dw / pi]
     delta_g_temp = [ifftshift(fft(fftshift(delta_g_energy[0]))) * dw / pi,
                     ifftshift(fft(fftshift(delta_g_energy[1]))) * dw / pi]
 
-    def time_to_fftind(ti):
-        return int(cutoff_factor * ec / dw) + (round(ti * cutoff_factor * ec / pi))
-
-    hl = zeros((3, N), complex)
-    hg = zeros((3, N), complex)
-    for i in range(N):
-        hl[0][i] = conj(delta_l_temp[0][time_to_fftind(times[i])])
-        hl[1][i] = conj(delta_l_temp[1][time_to_fftind(times[i])])
-        hg[0][i] = delta_g_temp[0][time_to_fftind(times[i])]
-        hg[1][i] = delta_g_temp[1][time_to_fftind(times[i])]
+    hl = zeros((3, N + 1), complex)
+    hg = zeros((3, N + 1), complex)
+    for i in range(N + 1):
+        hl[0][i] = conj(delta_l_temp[0][time_to_fftind(times[i], cutoff_factor, t_l, dw)])
+        hl[1][i] = conj(delta_l_temp[1][time_to_fftind(times[i], cutoff_factor, t_l, dw)])
+        hg[0][i] = delta_g_temp[0][time_to_fftind(times[i], cutoff_factor, t_l, dw)]
+        hg[1][i] = delta_g_temp[1][time_to_fftind(times[i], cutoff_factor, t_l, dw)]
     hl[2] = hl[0] + hl[1]
     hg[2] = hg[0] + hg[1]
 
-    def g(ti, site):  # t for time and j for the site number in the dot
-        return exp(-1j * E[site] * ti)
-
-    def update_green(self_energy, old_green, bare_green):
-        temp = copy(bare_green)
-        for site in range(4):
-            temp[site, :] -= integral_green(bare_green[site, :], self_energy[site, :], old_green[site, :])
-        return temp
-
-    def update_self_energy(number_of_times, green):
-        temp = zeros((4, number_of_times), complex)
-        for t_se in range(number_of_times):
-            temp[0, t_se] = hl[2][t_se] * (green[1, t_se] + green[2, t_se])
-            temp[1, t_se] = hg[2][t_se] * green[0, t_se] + hl[2][t_se] * green[3, t_se]
-            temp[2, t_se] = hg[2][t_se] * green[0, t_se] + hl[2][t_se] * green[3, t_se]
-            temp[3, t_se] = hg[2][t_se] * (green[1, t_se] + green[2, t_se])
-        return temp
-
     # build the initial states
 
-    G0 = zeros((4, N), complex)
-    for t in range(N):
+    G0 = zeros((4, N + 1), complex)
+    for t in range(N + 1):
         for state_i in range(4):
-            G0[state_i, t] = g(times[t], state_i)
+            G0[state_i, t] = g(times[t], state_i, E)
     G = copy(G0)
-    SE = update_self_energy(N, G)
+    SE = update_self_energy(G, hl, hg, N)
     delta_G = d_dyson + 1
     # print("start iterations to calculate G (green function), SE (self energy)")
     C = 0
     while delta_G > d_dyson:
         G_old = copy(G)
-        G = update_green(SE, G_old, G0)
-        SE = update_self_energy(N, G)
+        G = update_green(SE, G_old, G0, dt)
+        SE = update_self_energy(G, hl, hg, N)
         delta_G = amax(abs(G - G_old))
         C += 1
+        print("...... calculating propagator .......")
+        print(C, delta_G)
+
     # plt.plot(times, G[0].imag, label='0i')
     # plt.plot(times, G[1].imag, label='1i')
     # plt.plot(times, G[2], label='1')
@@ -208,32 +76,23 @@ def NCA(v, eps, u, temperature, lamb, t_max, N, dim_l, t_m, t_l):
     # plt.legend()
     # plt.show()
 
-    # calculating v
-
-    #    print(C, delta_G)
     # if lamb == 0:
     #     for s in range(4):
     #         savetxt("G_ido" + str(s) + ".out",
     #                 c_[times, G[s, :].real, G[s, :].imag])
-    # print("NCA green function Converged within", d_dyson, "after", C, "iterations.")
+    print("NCA green function Converged within", d_dyson, "after", C, "iterations.")
 
     #  calculate the vertex function K
-
-    def sign_time(fun, t_i, t_f):
-        if t_f - t_i >= 0:
-            return fun[t_f - t_i]
-        else:
-            return conj(fun[t_i - t_f])
 
     # savetxt("/home/ido/NCA/temp_results/Delta_lesserI.out", c_[times, imag(hl), -real(hl)])
     # savetxt("/home/ido/NCA/temp_results/Delta_greaterI.out", c_[times, imag(hg), -real(hg)])
     # FCS time
-    for i in range(N):
+    for i in range(N + 1):
         hl[2][i] = hl[0][i] * exp(lamb / 2) + hl[1][i]
         hg[2][i] = hg[0][i] * exp(-lamb / 2) + hg[1][i]
-    H_mat = zeros((4, 4, N, N), complex)
-    for t1 in range(N):
-        for t2 in range(N):
+    H_mat = zeros((4, 4, N + 1, N + 1), complex)
+    for t1 in range(N + 1):
+        for t2 in range(N + 1):
             H_mat[0, 1, t1, t2] = sign_time(hl[2], t1, t2)
             H_mat[0, 2, t1, t2] = sign_time(hl[2], t1, t2)
             H_mat[1, 0, t1, t2] = sign_time(hg[2], t1, t2)
@@ -243,44 +102,42 @@ def NCA(v, eps, u, temperature, lamb, t_max, N, dim_l, t_m, t_l):
             H_mat[3, 1, t1, t2] = sign_time(hg[2], t1, t2)
             H_mat[3, 2, t1, t2] = sign_time(hg[2], t1, t2)
 
-    def gen_bare_vertex(final_state, initial_state, final_time, initial_time, green_function):
-        return conj(green_function[final_state, final_time]) * green_function[initial_state, initial_time]
-
-    def mult_vertex(k):
-        va = zeros((4, N, N), complex)
-        for q in range(4):
-            for m in range(4):
-                va[q] += k[m] * H_mat[m, q]
-        return va
-
-    def update_vertex(p, gr, k0):
-        temp = copy(k0)
-        for i_f in range(4):
-            c = zeros((N, N), complex)
-            for t_2 in range(N):
-                c[:, t_2] = fft_integral(p[i_f, :, t_2], conj(gr[i_f, :]))
-            for t_1 in range(N):
-                temp[i_f, t_1, :] += fft_integral((gr[i_f, :]), c[t_1, :])
-        return temp
-
-    K0 = zeros((4, 4, N, N), complex)
-    for j1 in range(N):
-        for j2 in range(N):
+    K0 = zeros((4, 4, N + 1, N + 1), complex)
+    for j1 in range(N + 1):
+        for j2 in range(N + 1):
             for down in range(4):
                 K0[down, down, j1, j2] = gen_bare_vertex(down, down, j1, j2, G)
-    K = copy(K0)
+    Ks = copy(K0[:, :, :N // slice + 1, :N // slice + 1])
     # print("start iterations to find the vertex function")
 
     for a in range(4):
         C = 0
         delta_K = d_dyson + 1
         while delta_K > d_dyson:
+            K_old = copy(Ks[a])
+            P = mult_vertex(Ks[a], N // slice, H_mat[:, :, :N // slice + 1, :N // slice + 1])
+            Ks[a] = update_vertex(P, G[:, :N // slice + 1], K0[a, :, :N // slice + 1, :N // slice + 1], N // slice, dt)
+            delta_K = amax(abs(Ks[a] - K_old))
+            C += 1
+            print("...... calculating vertex .......")
+            print(a, C, delta_K)
+
+    K = copy(K0)
+    # print("start iterations to find the vertex function")
+
+    K = guess_vertex(Ks, N // slice, K, N)
+
+    for a in range(4):
+        C = 0
+        delta_K = d_dyson + 1
+        while delta_K > d_dyson:
             K_old = copy(K[a])
-            P = mult_vertex(K[a])
-            K[a] = update_vertex(P, G, K0[a])
+            P = mult_vertex(K[a], N, H_mat)
+            K[a] = update_vertex(P, G, K0[a], N, dt)
             delta_K = amax(abs(K[a] - K_old))
             C += 1
-            # print(C, delta_K)
+            print("...... calculating vertex .......")
+            print(a, C, delta_K)
 
     print("NCA vertex function Converged within", d_dyson, "after", C, "iterations.", "for v, h = ", v, eps)
     # calculate partition function
@@ -288,7 +145,7 @@ def NCA(v, eps, u, temperature, lamb, t_max, N, dim_l, t_m, t_l):
     for i in range(4):
         p0[i] = exp(-E[i] * beta)
     P0 = p0 / sum(p0)
-    save("K", K)
+    save("Ku", K)
     save("P", P0)
 
     if lamb == 0:
@@ -296,39 +153,26 @@ def NCA(v, eps, u, temperature, lamb, t_max, N, dim_l, t_m, t_l):
         for i in range(1):
             for tn in range(N):
                 Pr[i, tn] = K[i, :, tn, tn] @ p0[:]
-    Z = zeros((2, N//2), complex)
-    for jt in range(N//2):
+    Z = zeros(N, complex)
+    for jt in range(N):
         temp_Z = 0
         for j in range(4):
-            temp_Z += P0[:] @ K[j, :, 0, jt]
-        Z[0, jt] = temp_Z
-    for jt in range(N // 2, N):
-        temp_Z = 0
-        for j in range(4):
-            temp_Z += P0[:] @ K[j, :, N//2, jt]
-        Z[1, jt - N//2] = temp_Z
+            temp_Z += P0[:] @ K[j, :, jt, jt]
+        Z[jt] = temp_Z
     return Z
 
 
-y = NCA(0.5, 1, 1, 0.1, 0.1j, 20, 350, 1, 1, 1)
-c = log(y[1, -1] / y[0, -1]) / 10
-r = log(y[1, 99] / y[1, 49]) / 5
-print("c=", c, "r=", r)
-# r = NCA(0.5, 1, 1, 0.1, 0, 20, 200, 1, 1, 1)
-# w = NCA(0.5, 1, 1, 0.1, -0.1j, 20, 200, 1, 1, 1)
-plt.plot(linspace(0, 20, len(y[0])), log(y[0]), label="0.1")
-plt.plot(linspace(0, 20, len(y[1])), log(y[1]), label="0.1")
-# plt.plot(linspace(0, 20, len(r[0])), log(r[0]), label="0")
-# plt.plot(linspace(0, 20, len(r[1])), log(r[1]), label="0")
-# plt.plot(linspace(0, 20, len(w[0])), log(w[0]), label="-0.1")
-# plt.plot(linspace(0, 20, len(w[1])), log(w[1]), label="-0.1")
-plt.legend()
-plt.show()
-plt.plot(linspace(0, 20, len(y[0])), log(y[0]).imag, label="0.1")
-plt.plot(linspace(0, 20, len(y[1])), log(y[1]).imag, label="0.1")
-# plt.plot(linspace(0, 20, len(r[0])), log(r[0]).imag, label="0")
-# plt.plot(linspace(0, 20, len(r[1])), log(r[1]).imag, label="0")
-# plt.plot(linspace(0, 20, len(w[0])), log(w[0]).imag, label="-0.1")
-# plt.plot(linspace(0, 20, len(w[1])), log(w[1]).imag, label="-0.1")
-plt.legend()
-plt.show()
+def main():
+    start_time = time.time()
+    y = NCA(1, 0, 1, 1, 1, 20, 400, 1, 1, 1)
+    print("--- %s seconds ---" % (time.time() - start_time))
+    plt.plot(linspace(0, 20, len(y)), log(y), label="0.1")
+    plt.legend()
+    plt.show()
+    plt.plot(linspace(0, 20, len(y)), log(y).imag, label="0.1")
+    plt.legend()
+    plt.show()
+
+
+if __name__ == "__main__":
+    main()

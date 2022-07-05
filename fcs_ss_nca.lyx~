@@ -127,7 +127,10 @@ By perturbatively expanding in the dot–lead coupling, the vertex function
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-K_{\alpha}^{\beta}\left(t,t'\right)=k_{\alpha}^{\beta}\left(t,t'\right)+\underset{\delta\gamma}{\sum}\stackrel[0]{t}{\int}\stackrel[0]{t'}{\int}\mathrm{d}\tau\mathrm{d}\tau'k_{\delta}^{\beta}\left(t-\tau,t'-\tau'\right)\xi_{\gamma}^{\delta}\left(\tau-\tau'\right)K_{\alpha}^{\gamma}\left(\tau,\tau'\right).\label{eq:vertex_dyson}
+\begin{array}{cc}
+K_{\alpha}^{\beta}\left(t,t'\right) & =k_{\alpha}^{\beta}\left(t,t'\right)+\underset{\delta\gamma}{\sum}\stackrel[0]{t}{\int}\stackrel[0]{t'}{\int}\mathrm{d}\tau\mathrm{d}\tau'k_{\delta}^{\beta}\left(t-\tau,t'-\tau'\right)\xi_{\gamma}^{\delta}\left(\tau-\tau'\right)K_{\alpha}^{\gamma}\left(\tau,\tau'\right)\\
+ & =k_{\alpha}^{\beta}\left(t,t'\right)+\underset{\gamma}{\sum}\stackrel[0]{t}{\int}\stackrel[0]{t'}{\int}\mathrm{d}\tau\mathrm{d}\tau'G_{\beta}^{\dagger}\left(t-\tau\right)G_{\beta}\left(t'-\tau'\right)\xi_{\gamma}^{\beta}\left(\tau-\tau'\right)K_{\alpha}^{\gamma}\left(\tau,\tau'\right)
+\end{array}\label{eq:vertex_dyson}
 \end{equation}
 
 \end_inset
@@ -279,8 +282,8 @@ since this is a homogeneous equation over K, a normalization must be preformed
 
 \end_layout
 
-\begin_layout Part*
-2 Full Counting Statistics for steady state equation
+\begin_layout Section
+Full Counting Statistics for steady state equation wrong
 \end_layout
 
 \begin_layout Standard
@@ -294,27 +297,8 @@ For long starting time,
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-\sum_{\alpha}K_{\alpha}^{\beta}\left(t_{a}+t,t_{a}\right)=\sum_{\alpha}K_{\alpha}^{\beta}\left(t_{b}+t,t_{b}\right)\cdot e^{w\left(t_{b}-t_{a}\right)}\label{eq:vertex_time_scaling}
+\sum_{\alpha}K_{\alpha}^{\beta}\left(t_{a}+t,t_{a}\right)=\sum_{\alpha}K_{\alpha}^{\beta}\left(t_{b}+t,t_{b}\right)\cdot e^{w\left(-t_{b}+t_{a}\right)}\label{eq:vertex_time_scaling}
 \end{equation}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-and for long time 
-\begin_inset Formula $t:$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-K^{\beta}\left(t_{a}+t,t_{a}\right)\sim e^{rt}
-\]
 
 \end_inset
 
@@ -347,7 +331,7 @@ noprefix "false"
  using NCA,
 \begin_inset Formula 
 \begin{equation}
-K_{\alpha}^{\beta}\left(t,0\right)=k_{\alpha}^{\beta}\left(t,0\right)+\stackrel[0]{t}{\int}\mathrm{d}\tau G_{\alpha}^{*}\left(t\right)G_{\beta}\left(\tau\right)\xi_{\gamma}^{\delta}\left(\tau\right)K_{\alpha}^{\gamma}\left(\tau,0\right)\label{eq:first_step}
+K_{\alpha}^{\beta}\left(t,0\right)=k_{\alpha}^{\beta}\left(t,0\right)+\underset{\delta\gamma}{\sum}\stackrel[0]{t}{\int}\mathrm{d}\tau G_{\alpha}^{*}\left(t-\tau\right)G_{\beta}\left(\tau\right)\xi_{\gamma}^{\delta}\left(\tau\right)K_{\alpha}^{\gamma}\left(\tau,0\right)\label{eq:first_step}
 \end{equation}
 
 \end_inset
@@ -369,7 +353,7 @@ noprefix "false"
  to find the two times vertex function in all times,
 \begin_inset Formula 
 \[
-\sum_{\alpha}K_{\alpha}^{\beta}\left(t_{a}+t,t_{a}\right)=\sum_{\alpha}K_{\alpha}^{\beta}\left(t,0\right)\cdot e^{-wt_{a}}
+\sum_{\alpha}K_{\alpha}^{\beta}\left(t_{m}+h+t,t_{m}+h\right)=\sum_{\alpha}K_{\alpha}^{\beta}\left(t_{m}+t,t_{m}\right)\cdot e^{wh}
 \]
 
 \end_inset
@@ -401,7 +385,32 @@ noprefix "false"
  to find the equation on w,
 \begin_inset Formula 
 \[
-w=-\frac{1}{t}log\left(\frac{\sum_{\alpha}\left(k_{\alpha}^{\beta}\left(t,t'\right)+\underset{\delta\gamma}{\sum}\stackrel[0]{t}{\int}\stackrel[0]{t'}{\int}\mathrm{d}\tau\mathrm{d}\tau'k_{\delta}^{\beta}\left(t-\tau,t'-\tau'\right)\xi_{\gamma}^{\delta}\left(\tau-\tau'\right)K_{\alpha}^{\gamma}\left(\tau,\tau'\right)\right)}{\sum_{\alpha}K_{\alpha}^{\beta}\left(t-t',0\right)}\right)
+\begin{array}{cc}
+w & =-\frac{1}{h}log\left(\frac{\underset{\alpha\beta}{\sum}K_{\alpha}^{\beta}\left(t+h,t+h\right)}{\underset{\alpha\beta}{\sum}K_{\alpha}^{\beta}\left(t,t\right)}\right)\\
+ & =-\frac{1}{h}log\left(\frac{\underset{\alpha\beta}{\sum}\left(k_{\alpha}^{\beta}\left(t+h,t+h\right)+\underset{\delta\gamma}{\sum}\stackrel[0]{t+h}{\int}\stackrel[0]{t+h}{\int}\mathrm{d}\tau\mathrm{d}\tau'k_{\delta}^{\beta}\left(t+h-\tau,t+h-\tau'\right)\xi_{\gamma}^{\delta}\left(\tau-\tau'\right)K_{\alpha}^{\gamma}\left(\tau,\tau'\right)\right)}{\underset{\alpha\beta}{\sum}\left(k_{\alpha}^{\beta}\left(t,t\right)+\underset{\delta\gamma}{\sum}\stackrel[0]{t}{\int}\stackrel[0]{t}{\int}\mathrm{d}\tau\mathrm{d}\tau'k_{\delta}^{\beta}\left(t-\tau,t-\tau'\right)\xi_{\gamma}^{\delta}\left(\tau-\tau'\right)K_{\alpha}^{\gamma}\left(\tau,\tau'\right)\right)}\right)
+\end{array}
+\]
+
+\end_inset
+
+simpler way to calculate the denominator will be described in equation 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "eq:time_propagation_approx"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 
+\begin_inset Formula 
+\[
+\begin{array}{cc}
+w & =-\frac{1}{h}log\left(\frac{\underset{\alpha\beta}{\sum}\begin{array}{c}
+k_{\alpha}^{\beta}\left(h+t,h+t\right)-e^{wh}k_{\alpha}^{\beta}\left(t,t\right)+e^{wh}K_{\alpha}^{\beta}\left(t,t\right)\\
++2\mathfrak{Re}\underset{\gamma}{\sum}\stackrel[0]{h}{\int}\stackrel[0]{t}{\int}d\tau d\tau'G_{\beta}^{\dagger}\left(t+h-\tau\right)G_{\beta}\left(t+h-\tau'\right)\xi_{\gamma}^{\beta}\left(\tau-\tau'\right)K_{\alpha}^{\gamma}\left(\tau,\tau'\right)
+\end{array}}{\underset{\alpha\beta}{\sum}K_{\alpha}^{\beta}\left(t,t\right)}\right)\end{array}
 \]
 
 \end_inset
@@ -411,6 +420,56 @@ w=-\frac{1}{t}log\left(\frac{\sum_{\alpha}\left(k_{\alpha}^{\beta}\left(t,t'\rig
 
 \begin_layout Enumerate
 repeat stages 2 and 3 until w does not change.
+\end_layout
+
+\begin_layout Section
+new
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{cc}
+K_{\alpha}^{\beta}\left(t,t'\right) & =k_{\alpha}^{\beta}\left(t,t'\right)+\underset{\gamma}{\sum}\stackrel[0]{t}{\int}\stackrel[0]{t'}{\int}\mathrm{d}\tau\mathrm{d}\tau'G_{\beta}^{\dagger}\left(t-\tau\right)G_{\beta}\left(t'-\tau'\right)\xi_{\gamma}^{\delta}\left(\tau-\tau'\right)K_{\alpha}^{\gamma}\left(\tau,\tau'\right)\\
+K_{\alpha}^{\beta}\left(h+t,h+t'\right) & =k_{\alpha}^{\beta}\left(h+t,h+t'\right)+\underset{\gamma}{\sum}\stackrel[0]{h+t}{\int}\stackrel[0]{h+t'}{\int}\mathrm{d}\tau\mathrm{d}\tau'G_{\beta}^{\dagger}\left(h+t-\tau\right)G_{\beta}\left(h+t'-\tau'\right)\xi_{\gamma}^{\beta}\left(\tau-\tau'\right)K_{\alpha}^{\gamma}\left(\tau,\tau'\right)\\
+ & =k_{\alpha}^{\beta}\left(h+t,h+t'\right)+\underset{\gamma}{\sum}\stackrel[0]{h+t}{\int}\stackrel[0]{h+t'}{\int}\mathrm{d}\tau\mathrm{d}\tau'G_{\beta}^{\dagger}\left(h+t-\tau\right)G_{\beta}\left(h+t'-\tau'\right)\xi_{\gamma}^{\beta}\left(\tau-\tau'\right)K_{\alpha}^{\gamma}\left(\tau,\tau'\right)\\
+-h+\tau=x & =k_{\alpha}^{\beta}\left(h+t,h+t'\right)+\underset{\gamma}{\sum}\stackrel[-h]{t}{\int}\stackrel[-h]{t'}{\int}\mathrm{d}\tau\mathrm{d}\tau'G_{\beta}^{\dagger}\left(t-x\right)G_{\beta}\left(t'-x'\right)\xi_{\gamma}^{\beta}\left(x-x'\right)K_{\alpha}^{\gamma}\left(x+h,x'+h\right)\\
+ & =k_{\alpha}^{\beta}\left(h+t,h+t'\right)-e^{wh}k_{\alpha}^{\beta}\left(t,t'\right)+e^{wh}k_{\alpha}^{\beta}\left(t,t'\right)+\underset{\gamma}{\sum}\stackrel[0]{t}{\int}\stackrel[0]{t'}{\int}\mathrm{d}xdx'G_{\beta}^{\dagger}\left(t-x\right)G_{\beta}\left(t'-x'\right)\xi_{\gamma}^{\beta}\left(x-x'\right)K_{\alpha}^{\gamma}\left(x,x'\right)e^{wh}\\
+ & +\underset{\gamma}{\sum}\stackrel[-h]{0}{\int}\stackrel[-h]{t'}{\int}\mathrm{d}xdx'G_{\beta}^{\dagger}\left(t-x\right)G_{\beta}\left(t'-x'\right)\xi_{\gamma}^{\beta}\left(x-x'\right)K_{\alpha}^{\gamma}\left(x+h,x'+h\right)+\underset{\gamma}{\sum}\stackrel[-h]{t}{\int}\stackrel[-h]{0}{\int}\mathrm{d}x\mathrm{d}x'G_{\beta}^{\dagger}\left(t-x\right)G_{\beta}\left(t'-x'\right)\xi_{\gamma}^{\beta}\left(x-x'\right)K_{\alpha}^{\gamma}\left(x+h,x'+h\right)\\
+ & =k_{\alpha}^{\beta}\left(h+t,h+t'\right)-e^{wh}k_{\alpha}^{\beta}\left(t,t'\right)+e^{wh}K_{\alpha}^{\beta}\left(t,t'\right)\\
+ & +\underset{\gamma}{\sum}\stackrel[-h]{0}{\int}\stackrel[-h]{t'}{\int}\mathrm{d}xdx'G_{\beta}^{\dagger}\left(t-x\right)G_{\beta}\left(t'-x'\right)\xi_{\gamma}^{\beta}\left(x-x'\right)K_{\alpha}^{\gamma}\left(x+h,x'+h\right)+\underset{\gamma}{\sum}\stackrel[-h]{t}{\int}\stackrel[-h]{0}{\int}\mathrm{d}x\mathrm{d}x'G_{\beta}^{\dagger}\left(t-x\right)G_{\beta}\left(t'-x'\right)\xi_{\gamma}^{\beta}\left(x-x'\right)K_{\alpha}^{\gamma}\left(x+h,x'+h\right)\\
+t=t'\\
+K_{\alpha}^{\beta}\left(t+h,t+h\right) & =k_{\alpha}^{\beta}\left(h+t,h+t\right)-e^{wh}k_{\alpha}^{\beta}\left(t,t\right)+e^{wh}K_{\alpha}^{\beta}\left(t,t\right)\\
+ & +\underset{\gamma}{\sum}\stackrel[-h]{0}{\int}\stackrel[-h]{t}{\int}\mathrm{d}xdx'G_{\beta}^{\dagger}\left(t-x\right)G_{\beta}\left(t-x'\right)\xi_{\gamma}^{\beta}\left(x-x'\right)K_{\alpha}^{\gamma}\left(x+h,x'+h\right)+\underset{\gamma}{\sum}\stackrel[-h]{t}{\int}\stackrel[-h]{0}{\int}\mathrm{d}x\mathrm{d}x'G_{\beta}^{\dagger}\left(t-x\right)G_{\beta}\left(t-x'\right)\xi_{\gamma}^{\beta}\left(x-x'\right)K_{\alpha}^{\gamma}\left(x+h,x'+h\right)\\
+ & =k_{\alpha}^{\beta}\left(h+t,h+t\right)-e^{wh}k_{\alpha}^{\beta}\left(t,t\right)+e^{wh}K_{\alpha}^{\beta}\left(t,t\right)\\
+ & +2\mathfrak{Re}\underset{\gamma}{\sum}\stackrel[-h]{0}{\int}\stackrel[-h]{t}{\int}\mathrm{d}xdx'G_{\beta}^{\dagger}\left(t-x\right)G_{\beta}\left(t-x'\right)\xi_{\gamma}^{\beta}\left(x-x'\right)K_{\alpha}^{\gamma}\left(x+h,x'+h\right)\\
+ & \eqsim k_{\alpha}^{\beta}\left(h+t,h+t\right)-e^{wh}k_{\alpha}^{\beta}\left(t,t\right)+e^{wh}K_{\alpha}^{\beta}\left(t,t\right)\\
+ & +2\mathfrak{Re}\underset{\gamma}{\sum}\stackrel[-h]{0}{\int}\stackrel[-h]{t-h}{\int}\mathrm{d}xdx'G_{\beta}^{\dagger}\left(t-x\right)G_{\beta}\left(t-x'\right)\xi_{\gamma}^{\beta}\left(x-x'\right)K_{\alpha}^{\gamma}\left(x+h,x'+h\right)\\
+\\
+\end{array}\label{eq:time_propagation_approx}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+transition statistics
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{cc}
+P(\alpha\rightarrow\beta,time=h) & =P(\alpha,t)*P(\beta,t+h)=\left(\sum_{\gamma}K_{\gamma}^{\alpha}\left(t,t\right)\right)\left(\sum_{\gamma}K_{\gamma}^{\beta}\left(t+h,t+h\right)\right)\\
+\\
+\end{array}
+\]
+
+\end_inset
+
+
 \end_layout
 
 \end_body

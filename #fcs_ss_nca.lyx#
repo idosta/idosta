@@ -1,0 +1,466 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 1
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Full Counting Statistics in Steady State NCA
+\end_layout
+
+\begin_layout Author
+Ido Zemach
+\end_layout
+
+\begin_layout Section
+NCA equations to find the Vertex function
+\end_layout
+
+\begin_layout Standard
+
+\backslash
+
+\end_layout
+
+\begin_layout Subsection
+non equilibrium 
+\end_layout
+
+\begin_layout Standard
+NCA is a self consistent, lowest order perturbation expansion in the dot–lead
+ coupling, which only account for contributions that have a diagrammatic
+ representation in which the hybridization lines do not cross.
+\end_layout
+
+\begin_layout Standard
+The method allows to calculate the vertex function, 
+\begin_inset Formula $K_{\alpha}^{\beta}\left(t,t'\right)=Tr_{B}\left\{ \rho_{B}\left\langle \alpha\left|U^{\dagger}\left(t\right)\right|\beta\right\rangle \left\langle \beta\left|U\left(t'\right)\right|\alpha\right\rangle \right\} $
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+which later can be used to find observable, 
+\begin_inset Formula $\left\langle A\left(t\right)\right\rangle =\underset{\alpha}{\sum}K_{\alpha}^{\beta}\left(t,t'\right)\left\langle \beta\left|A\right|\beta\right\rangle $
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+By perturbatively expanding in the dot–lead coupling, the vertex function
+ is expressed in a Dyson equation:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{cc}
+K_{\alpha}^{\beta}\left(t,t'\right) & =k_{\alpha}^{\beta}\left(t,t'\right)+\underset{\delta\gamma}{\sum}\stackrel[0]{t}{\int}\stackrel[0]{t'}{\int}\mathrm{d}\tau\mathrm{d}\tau'k_{\delta}^{\beta}\left(t-\tau,t'-\tau'\right)\xi_{\gamma}^{\delta}\left(\tau-\tau'\right)K_{\alpha}^{\gamma}\left(\tau,\tau'\right)\\
+ & =k_{\alpha}^{\beta}\left(t,t'\right)+\underset{\gamma}{\sum}\stackrel[0]{t}{\int}\stackrel[0]{t'}{\int}\mathrm{d}\tau\mathrm{d}\tau'G_{\beta}^{\dagger}\left(t-\tau\right)G_{\beta}\left(t'-\tau'\right)\xi_{\gamma}^{\beta}\left(\tau-\tau'\right)K_{\alpha}^{\gamma}\left(\tau,\tau'\right)
+\end{array}\label{eq:vertex_dyson}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+....full description in 
+\end_layout
+
+\begin_layout Subsection
+Full Counting Statistics
+\end_layout
+
+\begin_layout Standard
+Let 
+\begin_inset Formula $P\left(t,n\right)$
+\end_inset
+
+ be the probability that there are n electrons in a given lead at time t.
+ Then, the generating function is defined as
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+Z\left(t,\lambda\right)=\left\langle e^{i\lambda\hat{N\left(t\right)}}\right\rangle =Tr_{D+B}\left\{ e^{i\lambda\hat{N\left(t\right)}}\rho\left(t\right)\right\} 
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $N=\underset{k}{\sum}a_{k}^{\dagger}a_{k}$
+\end_inset
+
+ is the number operator of the lead under consideration and 
+\begin_inset Formula $ρ\left(t\right)$
+\end_inset
+
+ is the density operator of the entire system.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{cc}
+Z\left(t,\lambda\right) & =Tr_{D+B}\left\{ e^{i\lambda/2\hat{N}}e^{-iHt}\rho\left(0\right)e^{iHt}e^{i\lambda/2\hat{N}}\right\} \\
+ & =Tr_{D+B}\left\{ e^{i\lambda/2\hat{N}}e^{-iHt}e^{-i\lambda/2\hat{N}}e^{i\lambda/2\hat{N}}\rho\left(0\right)e^{i\lambda/2\hat{N}}e^{-i\lambda/2\hat{N}}e^{iHt}e^{i\lambda/2\hat{N}}\right\} 
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Given that the initial density matrix is diagonal in the states of the lead
+ this expression simplifies to
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{cc}
+Z\left(t,\lambda\right) & =Tr_{D+B}\left\{ e^{−iH_{\lambda}t}ρ\left(0\right)e^{iH_{-\lambda}t}\right\} \\
+ & =Tr_{D+B}\left\{ ρ\left(t,\lambda\right)\right\} 
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $H_{\lambda}=e^{i\lambda\hat{N\left(t\right)}}He^{-i\lambda\hat{N\left(t\right)}}$
+\end_inset
+
+and 
+\begin_inset Formula $ρ\left(t,χ\right)=e{}^{-iH_{χ}t}ρ\left(0\right)e^{iH_{−χ}t}.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Different order derivatives of the generating function will give different
+ order comulants of the number of electrons in one of the leads.
+ 
+\end_layout
+
+\begin_layout Subsection
+Steady State NCA
+\end_layout
+
+\begin_layout Standard
+Under the assumption that at steady state the vertex function depends only
+ on the difference between its two time arguments, and the initial state
+ does not matter,
+\begin_inset Formula $K_{\alpha}^{\beta}\left(t,t'\right)\underset{t,t'\rightarrow\infty}{\rightarrow}K^{\beta}\left(t-t'\right)$
+\end_inset
+
+.
+ changing the variables of 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "eq:vertex_dyson"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ to 
+\begin_inset Formula $\Delta=\tau-\tau',\tau=\tau$
+\end_inset
+
+the vertex function at steady state must obey:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+K_{t_{m}}^{\beta}\left(t\right)=\intop_{-t_{m}}^{t}d\tau\intop_{\tau}^{t_{m}}d\Delta G_{\beta}^{*}\left(t-\tau\right)G_{\beta}\left(\Delta-\tau\right)\sum_{\gamma}\xi_{\gamma}^{\beta}\left(\Delta\right)K_{t_{m}}^{\gamma}\left(\Delta\right)\label{eq:ss_wo_counting_field}
+\end{equation}
+
+\end_inset
+
+,
+\begin_inset Formula 
+\[
+t_{m}\rightarrow\infty
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+since this is a homogeneous equation over K, a normalization must be preformed
+ after every iteration, 
+\begin_inset Formula $\underset{\beta}{\sum}K^{\beta}\left(0\right)=1.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Full Counting Statistics for steady state equation wrong
+\end_layout
+
+\begin_layout Standard
+For long starting time, 
+\begin_inset Formula $t_{a}$
+\end_inset
+
+, the following relation holds:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\sum_{\alpha}K_{\alpha}^{\beta}\left(t_{a}+t,t_{a}\right)=\sum_{\alpha}K_{\alpha}^{\beta}\left(t_{b}+t,t_{b}\right)\cdot e^{w\left(-t_{b}+t_{a}\right)}\label{eq:vertex_time_scaling}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+the general idea of the self consistency algorithm is:
+\end_layout
+
+\begin_layout Enumerate
+Plug in 
+\begin_inset Formula $t'=0$
+\end_inset
+
+ to 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "eq:vertex_dyson"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, and find 
+\begin_inset Formula $K_{\alpha}^{\beta}\left(t,0\right)$
+\end_inset
+
+ using NCA,
+\begin_inset Formula 
+\begin{equation}
+K_{\alpha}^{\beta}\left(t,0\right)=k_{\alpha}^{\beta}\left(t,0\right)+\underset{\delta\gamma}{\sum}\stackrel[0]{t}{\int}\mathrm{d}\tau G_{\alpha}^{*}\left(t-\tau\right)G_{\beta}\left(\tau\right)\xi_{\gamma}^{\delta}\left(\tau\right)K_{\alpha}^{\gamma}\left(\tau,0\right)\label{eq:first_step}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Use relation 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "eq:vertex_time_scaling"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ to find the two times vertex function in all times,
+\begin_inset Formula 
+\[
+\sum_{\alpha}K_{\alpha}^{\beta}\left(t_{m}+h+t,t_{m}+h\right)=\sum_{\alpha}K_{\alpha}^{\beta}\left(t_{m}+t,t_{m}\right)\cdot e^{wh}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Insert two times (choose smartly) to equations 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "eq:vertex_dyson"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, and
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "eq:vertex_time_scaling"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ to find the equation on w,
+\begin_inset Formula 
+\[
+\begin{array}{cc}
+w & =-\frac{1}{h}log\left(\frac{\underset{\alpha\beta}{\sum}K_{\alpha}^{\beta}\left(t+h,t+h\right)}{\underset{\alpha\beta}{\sum}K_{\alpha}^{\beta}\left(t,t\right)}\right)\\
+ & =-\frac{1}{h}log\left(\frac{\underset{\alpha\beta}{\sum}\left(k_{\alpha}^{\beta}\left(t+h,t+h\right)+\underset{\delta\gamma}{\sum}\stackrel[0]{t+h}{\int}\stackrel[0]{t+h}{\int}\mathrm{d}\tau\mathrm{d}\tau'k_{\delta}^{\beta}\left(t+h-\tau,t+h-\tau'\right)\xi_{\gamma}^{\delta}\left(\tau-\tau'\right)K_{\alpha}^{\gamma}\left(\tau,\tau'\right)\right)}{\underset{\alpha\beta}{\sum}\left(k_{\alpha}^{\beta}\left(t,t\right)+\underset{\delta\gamma}{\sum}\stackrel[0]{t}{\int}\stackrel[0]{t}{\int}\mathrm{d}\tau\mathrm{d}\tau'k_{\delta}^{\beta}\left(t-\tau,t-\tau'\right)\xi_{\gamma}^{\delta}\left(\tau-\tau'\right)K_{\alpha}^{\gamma}\left(\tau,\tau'\right)\right)}\right)
+\end{array}
+\]
+
+\end_inset
+
+simpler way to calculate the denominator will be described in equation 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "eq:time_propagation_approx"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 
+\begin_inset Formula 
+\[
+\begin{array}{cc}
+w & =-\frac{1}{h}log\left(\frac{\underset{\alpha\beta}{\sum}\begin{array}{c}
+k_{\alpha}^{\beta}\left(h+t,h+t\right)-e^{wh}k_{\alpha}^{\beta}\left(t,t\right)+e^{wh}K_{\alpha}^{\beta}\left(t,t\right)\\
++2\mathfrak{Re}\underset{\gamma}{\sum}\stackrel[0]{h}{\int}\stackrel[0]{t}{\int}d\tau d\tau'G_{\beta}^{\dagger}\left(t+h-\tau\right)G_{\beta}\left(t+h-\tau'\right)\xi_{\gamma}^{\beta}\left(\tau-\tau'\right)K_{\alpha}^{\gamma}\left(\tau,\tau'\right)
+\end{array}}{\underset{\alpha\beta}{\sum}K_{\alpha}^{\beta}\left(t,t\right)}\right)\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+repeat stages 2 and 3 until w does not change.
+\end_layout
+
+\begin_layout Section
+new
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{cc}
+K_{\alpha}^{\beta}\left(t,t'\right) & =k_{\alpha}^{\beta}\left(t,t'\right)+\underset{\gamma}{\sum}\stackrel[0]{t}{\int}\stackrel[0]{t'}{\int}\mathrm{d}\tau\mathrm{d}\tau'G_{\beta}^{\dagger}\left(t-\tau\right)G_{\beta}\left(t'-\tau'\right)\xi_{\gamma}^{\delta}\left(\tau-\tau'\right)K_{\alpha}^{\gamma}\left(\tau,\tau'\right)\\
+K_{\alpha}^{\beta}\left(h+t,h+t'\right) & =k_{\alpha}^{\beta}\left(h+t,h+t'\right)+\underset{\gamma}{\sum}\stackrel[0]{h+t}{\int}\stackrel[0]{h+t'}{\int}\mathrm{d}\tau\mathrm{d}\tau'G_{\beta}^{\dagger}\left(h+t-\tau\right)G_{\beta}\left(h+t'-\tau'\right)\xi_{\gamma}^{\beta}\left(\tau-\tau'\right)K_{\alpha}^{\gamma}\left(\tau,\tau'\right)\\
+ & =k_{\alpha}^{\beta}\left(h+t,h+t'\right)+\underset{\gamma}{\sum}\stackrel[0]{h+t}{\int}\stackrel[0]{h+t'}{\int}\mathrm{d}\tau\mathrm{d}\tau'G_{\beta}^{\dagger}\left(h+t-\tau\right)G_{\beta}\left(h+t'-\tau'\right)\xi_{\gamma}^{\beta}\left(\tau-\tau'\right)K_{\alpha}^{\gamma}\left(\tau,\tau'\right)\\
+-h+\tau=x & =k_{\alpha}^{\beta}\left(h+t,h+t'\right)+\underset{\gamma}{\sum}\stackrel[-h]{t}{\int}\stackrel[-h]{t'}{\int}\mathrm{d}\tau\mathrm{d}\tau'G_{\beta}^{\dagger}\left(t-x\right)G_{\beta}\left(t'-x'\right)\xi_{\gamma}^{\beta}\left(x-x'\right)K_{\alpha}^{\gamma}\left(x+h,x'+h\right)\\
+ & =k_{\alpha}^{\beta}\left(h+t,h+t'\right)-e^{wh}k_{\alpha}^{\beta}\left(t,t'\right)+e^{wh}k_{\alpha}^{\beta}\left(t,t'\right)+\underset{\gamma}{\sum}\stackrel[0]{t}{\int}\stackrel[0]{t'}{\int}\mathrm{d}xdx'G_{\beta}^{\dagger}\left(t-x\right)G_{\beta}\left(t'-x'\right)\xi_{\gamma}^{\beta}\left(x-x'\right)K_{\alpha}^{\gamma}\left(x,x'\right)e^{wh}\\
+ & +\underset{\gamma}{\sum}\stackrel[-h]{0}{\int}\stackrel[-h]{t'}{\int}\mathrm{d}xdx'G_{\beta}^{\dagger}\left(t-x\right)G_{\beta}\left(t'-x'\right)\xi_{\gamma}^{\beta}\left(x-x'\right)K_{\alpha}^{\gamma}\left(x+h,x'+h\right)+\underset{\gamma}{\sum}\stackrel[-h]{t}{\int}\stackrel[-h]{0}{\int}\mathrm{d}x\mathrm{d}x'G_{\beta}^{\dagger}\left(t-x\right)G_{\beta}\left(t'-x'\right)\xi_{\gamma}^{\beta}\left(x-x'\right)K_{\alpha}^{\gamma}\left(x+h,x'+h\right)\\
+ & =k_{\alpha}^{\beta}\left(h+t,h+t'\right)-e^{wh}k_{\alpha}^{\beta}\left(t,t'\right)+e^{wh}K_{\alpha}^{\beta}\left(t,t'\right)\\
+ & +\underset{\gamma}{\sum}\stackrel[-h]{0}{\int}\stackrel[-h]{t'}{\int}\mathrm{d}xdx'G_{\beta}^{\dagger}\left(t-x\right)G_{\beta}\left(t'-x'\right)\xi_{\gamma}^{\beta}\left(x-x'\right)K_{\alpha}^{\gamma}\left(x+h,x'+h\right)+\underset{\gamma}{\sum}\stackrel[-h]{t}{\int}\stackrel[-h]{0}{\int}\mathrm{d}x\mathrm{d}x'G_{\beta}^{\dagger}\left(t-x\right)G_{\beta}\left(t'-x'\right)\xi_{\gamma}^{\beta}\left(x-x'\right)K_{\alpha}^{\gamma}\left(x+h,x'+h\right)\\
+t=t'\\
+K_{\alpha}^{\beta}\left(t+h,t+h\right) & =k_{\alpha}^{\beta}\left(h+t,h+t\right)-e^{wh}k_{\alpha}^{\beta}\left(t,t\right)+e^{wh}K_{\alpha}^{\beta}\left(t,t\right)\\
+ & +\underset{\gamma}{\sum}\stackrel[-h]{0}{\int}\stackrel[-h]{t}{\int}\mathrm{d}xdx'G_{\beta}^{\dagger}\left(t-x\right)G_{\beta}\left(t-x'\right)\xi_{\gamma}^{\beta}\left(x-x'\right)K_{\alpha}^{\gamma}\left(x+h,x'+h\right)+\underset{\gamma}{\sum}\stackrel[-h]{t}{\int}\stackrel[-h]{0}{\int}\mathrm{d}x\mathrm{d}x'G_{\beta}^{\dagger}\left(t-x\right)G_{\beta}\left(t-x'\right)\xi_{\gamma}^{\beta}\left(x-x'\right)K_{\alpha}^{\gamma}\left(x+h,x'+h\right)\\
+ & =k_{\alpha}^{\beta}\left(h+t,h+t\right)-e^{wh}k_{\alpha}^{\beta}\left(t,t\right)+e^{wh}K_{\alpha}^{\beta}\left(t,t\right)\\
+ & +2\mathfrak{Re}\underset{\gamma}{\sum}\stackrel[-h]{0}{\int}\stackrel[-h]{t}{\int}\mathrm{d}xdx'G_{\beta}^{\dagger}\left(t-x\right)G_{\beta}\left(t-x'\right)\xi_{\gamma}^{\beta}\left(x-x'\right)K_{\alpha}^{\gamma}\left(x+h,x'+h\right)\\
+ & \eqsim k_{\alpha}^{\beta}\left(h+t,h+t\right)-e^{wh}k_{\alpha}^{\beta}\left(t,t\right)+e^{wh}K_{\alpha}^{\beta}\left(t,t\right)\\
+ & +2\mathfrak{Re}\underset{\gamma}{\sum}\stackrel[-h]{0}{\int}\stackrel[-h]{t-h}{\int}\mathrm{d}xdx'G_{\beta}^{\dagger}\left(t-x\right)G_{\beta}\left(t-x'\right)\xi_{\gamma}^{\beta}\left(x-x'\right)K_{\alpha}^{\gamma}\left(x+h,x'+h\right)
+\end{array}\label{eq:time_propagation_approx}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\begin{array}{cc}
+e^{wh} & =\frac{\sum_{\alpha\beta}k_{\alpha}^{\beta}\left(h+t,h+t\right)+2\mathfrak{Re}\underset{\gamma}{\sum}\stackrel[0]{h}{\int}\stackrel[0]{t}{\int}d\tau d\tau'G_{\beta}^{\dagger}\left(t+h-\tau\right)G_{\beta}\left(t+h-\tau'\right)\xi_{\gamma}^{\beta}\left(\tau-\tau'\right)K_{\alpha}^{\gamma}\left(\tau,\tau'\right)}{\sum_{\alpha\beta}k_{\alpha}^{\beta}\left(t,t\right)}\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
