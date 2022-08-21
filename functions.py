@@ -61,9 +61,9 @@ def normal_k(vertex, N):
 def mid_term(vertex, Hl, Hg, N):
     # this term is the multiplication of the hybridization function and the vertex function
     temp_mat = zeros((4, N + 1), complex)
-    temp_mat[0] = (vertex[1] + vertex[2]) * Hl
-    temp_mat[3] = (vertex[1] + vertex[2]) * Hg
-    temp_mat[1] = vertex[0] * Hg + vertex[3] * Hl
+    temp_mat[0] = (vertex[1] + vertex[2]) * Hg
+    temp_mat[3] = (vertex[1] + vertex[2]) * Hl
+    temp_mat[1] = vertex[0] * Hl + vertex[3] * Hg
     temp_mat[2] = temp_mat[1]
     return temp_mat
 
@@ -156,7 +156,7 @@ def gen_hyb(dim, t_mol, t_lead, epsilon, NU, n_c, nw):
     # define mathematical functions
 
 
-def gamma_c(energy):
+def gamma_c(energy, dim_l, t_m, t_l, N_lead, n_cheb, N_w):
     gam = gen_hyb(dim_l, t_m, t_l, 0, N_lead, n_cheb, N_w)
     y = zeros(len(energy))
     for en in range(len(energy)):
@@ -210,9 +210,9 @@ def update_vertex(p, gr, k0, N, dt):
     for i_f in range(4):
         c = zeros((N + 1, N + 1), complex)
         for t_2 in range(N + 1):
-            c[:, t_2] = fft_integral(p[i_f, :, t_2], conj(gr[i_f, :]), dt)
+            c[:, t_2] = fft_integral(p[i_f, :, t_2], conj(gr[i_f, :N + 1]), dt)
         for t_1 in range(N + 1):
-            temp[i_f, t_1, :] += fft_integral((gr[i_f, :]), c[t_1, :], dt)
+            temp[i_f, t_1, :] += fft_integral((gr[i_f, :N + 1]), c[t_1, :], dt)
     return temp
 
 
@@ -284,3 +284,41 @@ def find_fcs(K, G, H, dt):
             fs[0] += G[i, h + N] * conj(G[j, h + N]) + int_cal(i, j)
             fs[1] += G[i, N] * conj(G[j, N])
     return log(fs[0] / fs[1]) / (h * dt)
+
+
+def find_moment(g, Hg, Hl, N, dt):
+    T = zeros((4, 4, N + 1), complex)
+
+    T[1, 0] = 2 * real(fft_integral(conj(g[1]), Hg * conj(g[0]), dt) * g[1])
+    T[2, 0] = 2 * real(fft_integral(conj(g[2]), Hg * conj(g[0]), dt) * g[2])
+    T[1, 3] = 2 * real(fft_integral(conj(g[1]), Hl * conj(g[3]), dt) * g[1])
+    T[2, 3] = 2 * real(fft_integral(conj(g[2]), Hl * conj(g[3]), dt) * g[2])
+    T[0, 1] = 2 * real(fft_integral(conj(g[0]), Hl * conj(g[1]), dt) * g[0])
+    T[3, 1] = 2 * real(fft_integral(conj(g[3]), Hg * conj(g[1]), dt) * g[3])
+    T[0, 2] = 2 * real(fft_integral(conj(g[0]), Hl * conj(g[2]), dt) * g[0])
+    T[3, 2] = 2 * real(fft_integral(conj(g[3]), Hg * conj(g[2]), dt) * g[3])
+
+    T[0, 0] = - T[1, 0] - T[2, 0]
+    T[1, 1] = - T[0, 1] - T[3, 1]
+    T[2, 2] = - T[0, 2] - T[3, 2]
+    T[3, 3] = - T[1, 3] - T[2, 3]
+
+    return T
+
+
+def F_prop_p(N, m, p, dt):
+    temp = zeros((4, N + 1), complex)
+    for i in range(N + 1):
+        temp[:, i] += p[:, 0]
+    for start in range(4):
+        for final in range(4):
+            if not m[final, start, 1] == 0:
+                temp[final] += fft_integral(m[final, start], p[start], dt)
+
+    return temp
+
+
+def ss_matrix(m, dt):
+    temp = identity(4, complex)
+    temp += sum(m, 2) * dt
+    return temp

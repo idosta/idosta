@@ -387,7 +387,7 @@ noprefix "false"
 \[
 \begin{array}{cc}
 w & =-\frac{1}{h}log\left(\frac{\underset{\alpha\beta}{\sum}K_{\alpha}^{\beta}\left(t+h,t+h\right)}{\underset{\alpha\beta}{\sum}K_{\alpha}^{\beta}\left(t,t\right)}\right)\\
- & =-\frac{1}{h}log\left(\frac{\underset{\alpha\beta}{\sum}\left(k_{\alpha}^{\beta}\left(t+h,t+h\right)+\underset{\delta\gamma}{\sum}\stackrel[0]{t+h}{\int}\stackrel[0]{t+h}{\int}\mathrm{d}\tau\mathrm{d}\tau'k_{\delta}^{\beta}\left(t+h-\tau,t+h-\tau'\right)\xi_{\gamma}^{\delta}\left(\tau-\tau'\right)K_{\alpha}^{\gamma}\left(\tau,\tau'\right)\right)}{\underset{\alpha\beta}{\sum}\left(k_{\alpha}^{\beta}\left(t,t\right)+\underset{\delta\gamma}{\sum}\stackrel[0]{t}{\int}\stackrel[0]{t}{\int}\mathrm{d}\tau\mathrm{d}\tau'k_{\delta}^{\beta}\left(t-\tau,t-\tau'\right)\xi_{\gamma}^{\delta}\left(\tau-\tau'\right)K_{\alpha}^{\gamma}\left(\tau,\tau'\right)\right)}\right)
+ & =-\frac{1}{h}\log\left(\frac{\underset{\alpha\beta}{\sum}\left(k_{\alpha}^{\beta}\left(t+h,t+h\right)+\underset{\delta\gamma}{\sum}\stackrel[0]{t+h}{\int}\stackrel[0]{t+h}{\int}\mathrm{d}\tau\mathrm{d}\tau'k_{\delta}^{\beta}\left(t+h-\tau,t+h-\tau'\right)\xi_{\gamma}^{\delta}\left(\tau-\tau'\right)K_{\alpha}^{\gamma}\left(\tau,\tau'\right)\right)}{\underset{\alpha\beta}{\sum}\left(k_{\alpha}^{\beta}\left(t,t\right)+\underset{\delta\gamma}{\sum}\stackrel[0]{t}{\int}\stackrel[0]{t}{\int}\mathrm{d}\tau\mathrm{d}\tau'k_{\delta}^{\beta}\left(t-\tau,t-\tau'\right)\xi_{\gamma}^{\delta}\left(\tau-\tau'\right)K_{\alpha}^{\gamma}\left(\tau,\tau'\right)\right)}\right)
 \end{array}
 \]
 
@@ -407,7 +407,7 @@ noprefix "false"
 \begin_inset Formula 
 \[
 \begin{array}{cc}
-w & =-\frac{1}{h}log\left(\frac{\underset{\alpha\beta}{\sum}\begin{array}{c}
+w & =-\frac{1}{h}\log\left(\frac{\underset{\alpha\beta}{\sum}\begin{array}{c}
 k_{\alpha}^{\beta}\left(h+t,h+t\right)-e^{wh}k_{\alpha}^{\beta}\left(t,t\right)+e^{wh}K_{\alpha}^{\beta}\left(t,t\right)\\
 +2\mathfrak{Re}\underset{\gamma}{\sum}\stackrel[0]{h}{\int}\stackrel[0]{t}{\int}d\tau d\tau'G_{\beta}^{\dagger}\left(t+h-\tau\right)G_{\beta}\left(t+h-\tau'\right)\xi_{\gamma}^{\beta}\left(\tau-\tau'\right)K_{\alpha}^{\gamma}\left(\tau,\tau'\right)
 \end{array}}{\underset{\alpha\beta}{\sum}K_{\alpha}^{\beta}\left(t,t\right)}\right)\end{array}

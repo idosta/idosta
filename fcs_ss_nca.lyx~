@@ -444,28 +444,9 @@ K_{\alpha}^{\beta}\left(t+h,t+h\right) & =k_{\alpha}^{\beta}\left(h+t,h+t\right)
  & =k_{\alpha}^{\beta}\left(h+t,h+t\right)-e^{wh}k_{\alpha}^{\beta}\left(t,t\right)+e^{wh}K_{\alpha}^{\beta}\left(t,t\right)\\
  & +2\mathfrak{Re}\underset{\gamma}{\sum}\stackrel[-h]{0}{\int}\stackrel[-h]{t}{\int}\mathrm{d}xdx'G_{\beta}^{\dagger}\left(t-x\right)G_{\beta}\left(t-x'\right)\xi_{\gamma}^{\beta}\left(x-x'\right)K_{\alpha}^{\gamma}\left(x+h,x'+h\right)\\
  & \eqsim k_{\alpha}^{\beta}\left(h+t,h+t\right)-e^{wh}k_{\alpha}^{\beta}\left(t,t\right)+e^{wh}K_{\alpha}^{\beta}\left(t,t\right)\\
- & +2\mathfrak{Re}\underset{\gamma}{\sum}\stackrel[-h]{0}{\int}\stackrel[-h]{t-h}{\int}\mathrm{d}xdx'G_{\beta}^{\dagger}\left(t-x\right)G_{\beta}\left(t-x'\right)\xi_{\gamma}^{\beta}\left(x-x'\right)K_{\alpha}^{\gamma}\left(x+h,x'+h\right)\\
-\\
+ & +2\mathfrak{Re}\underset{\gamma}{\sum}\stackrel[-h]{0}{\int}\stackrel[-h]{t-h}{\int}\mathrm{d}xdx'G_{\beta}^{\dagger}\left(t-x\right)G_{\beta}\left(t-x'\right)\xi_{\gamma}^{\beta}\left(x-x'\right)K_{\alpha}^{\gamma}\left(x+h,x'+h\right)
 \end{array}\label{eq:time_propagation_approx}
 \end{equation}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-transition statistics
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-\begin{array}{cc}
-P(\alpha\rightarrow\beta,time=h) & =P(\alpha,t)*P(\beta,t+h)=\left(\sum_{\gamma}K_{\gamma}^{\alpha}\left(t,t\right)\right)\left(\sum_{\gamma}K_{\gamma}^{\beta}\left(t+h,t+h\right)\right)\\
-\\
-\end{array}
-\]
 
 \end_inset
 

@@ -26,8 +26,7 @@ def NCA(v, eps, u, temperature, lamb, t_max, N, dim_l, t_m, t_l):
     cutoff_factor = 1000
     dw = 0.01 * t_l
     w = arange(-ec * cutoff_factor, ec * cutoff_factor, dw)
-    d_dyson = 1e-7
-    slice = 6
+    d_dyson = 1e-8
 
     gam_w = gamma(w, epsilon_lead, t_l, t_m)
 
@@ -107,25 +106,9 @@ def NCA(v, eps, u, temperature, lamb, t_max, N, dim_l, t_m, t_l):
         for j2 in range(N + 1):
             for down in range(4):
                 K0[down, down, j1, j2] = gen_bare_vertex(down, down, j1, j2, G)
-    Ks = copy(K0[:, :, :N // slice + 1, :N // slice + 1])
-    # print("start iterations to find the vertex function")
-
-    for a in range(4):
-        C = 0
-        delta_K = d_dyson + 1
-        while delta_K > d_dyson:
-            K_old = copy(Ks[a])
-            P = mult_vertex(Ks[a], N // slice, H_mat[:, :, :N // slice + 1, :N // slice + 1])
-            Ks[a] = update_vertex(P, G[:, :N // slice + 1], K0[a, :, :N // slice + 1, :N // slice + 1], N // slice, dt)
-            delta_K = amax(abs(Ks[a] - K_old))
-            C += 1
-            print("...... calculating vertex .......")
-            print(a, C, delta_K)
 
     K = copy(K0)
     # print("start iterations to find the vertex function")
-
-    K = guess_vertex(Ks, N // slice, K, N)
 
     for a in range(4):
         C = 0
@@ -145,33 +128,23 @@ def NCA(v, eps, u, temperature, lamb, t_max, N, dim_l, t_m, t_l):
     for i in range(4):
         p0[i] = exp(-E[i] * beta)
     P0 = p0 / sum(p0)
-    save("Ku", K)
-    save("P", P0)
-
-    if lamb == 0:
-        Pr = zeros((4, N), complex)
-        for i in range(1):
-            for tn in range(N):
-                Pr[i, tn] = K[i, :, tn, tn] @ p0[:]
-    Z = zeros(N, complex)
-    for jt in range(N):
-        temp_Z = 0
+    p = zeros((4, N + 1), complex)
+    for i in range(N + 1):
         for j in range(4):
-            temp_Z += P0[:] @ K[j, :, jt, jt]
-        Z[jt] = temp_Z
-    return Z
+            p[j, i] = K[j, :, i, i] @ P0
+
+    return p
 
 
 def main():
-    start_time = time.time()
-    y = NCA(1, 0, 1, 1, 1, 20, 400, 1, 1, 1)
-    print("--- %s seconds ---" % (time.time() - start_time))
-    plt.plot(linspace(0, 20, len(y)), log(y), label="0.1")
-    plt.legend()
-    plt.show()
-    plt.plot(linspace(0, 20, len(y)), log(y).imag, label="0.1")
-    plt.legend()
-    plt.show()
+    p = zeros((4, 11, 3), complex)
+    for v in range(-5, 6):
+        for h in range(-1, 2):
+            p[:, 5 + v, 1 + h] = NCA(v, h, 1, 1, 0, 10, 200, 1, 1, 1)[:, -1]
+    save('p_nca', p)
+    plt.imshow(p[1])
+    plt.plot()
+
 
 
 if __name__ == "__main__":

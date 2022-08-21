@@ -1,14 +1,11 @@
 import matplotlib.pyplot as plt
 from numpy import *
-
 from functions import *
 
 
-def main():
-    v, eps, u, temperature, t_m, t_l = 1, 0, 1, 1, 1, 1
-    lamb = 0
+def ss_nca(v, eps, u, temperature, t_m, t_l, lamb):
     ga = (t_m ** 2) / t_l
-    epsilon_lead = t_l * ga  # adding elctron energy on the lead
+    epsilon_lead = t_l * ga  # adding electron energy on the lead
     beta = 1.0 / (ga * temperature)
     V = v * ga
     miu = array([V / 2, -V / 2])  # 0'th place for left and 1 for right lead
@@ -21,7 +18,7 @@ def main():
     # numerical parameters
     # N is number of time points index N is time zero
 
-    t_max = 30  # numerical parameter for infinity
+    t_max = 15  # numerical parameter for infinity
     N = 20 * t_max  # number of time data points
     times = linspace(-t_max / 2, t_max / 2, N + 1)
     times_plus = linspace(0, t_max, N + 1)
@@ -30,8 +27,8 @@ def main():
     N_w = 5000000
     w = linspace(- 2 * t_l * cutoff_factor, 2 * t_l * cutoff_factor, N_w)
     dw = w[1] - w[0]
-    d_dyson = 1e-6
-    a = 0.3
+    d_dyson = 1e-8
+    a = 0.1
 
     delta_l_energy = [gamma(w, epsilon_lead, t_l, t_m) * f(w, miu[0], beta),
                       gamma(w, epsilon_lead, t_l, t_m) * f(w, miu[1], beta)]
@@ -98,15 +95,24 @@ def main():
         C += 1
 
     print("NCA vertex function Converged within", delta_K, "after", C, "iterations.")
-
-    plt.plot(times, K[0], label='0')
-    plt.plot(times, K[1], label='1')
-    plt.plot(times, K[2].imag, label='1i')
-    plt.plot(times, K[3].imag, label='0i')
-    plt.legend()
+    for i in range(4):
+        plt.plot(times, K[i])
+    plt.show()
+    for i in range(4):
+        plt.plot(times, K[i].imag)
     plt.show()
 
-    save("Kss", K)
+    return K[:, N//2]
+
+
+def main():
+    p = zeros((4, 21, 11))
+    for v in range(-10, 11):
+        for h in range(-5, 6):
+            p[:, 10 + v, 5 + h] = ss_nca(v, h, 5, 1, 1, 1, 0)
+    save('p_old_21_7', p)
+    plt.imshow(p)
+    plt.plot()
 
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-from typing import Tuple, Union, Iterable
+from typing import Tuple, Union, Iterable, Any
 
 from numpy import *
 from numpy import ndarray
@@ -8,10 +8,10 @@ from numpy.polynomial.chebyshev import chebval
 from matplotlib import pyplot as plt
 
 # physical parameters
-t = 1
+t = 100
 tl = t  # hoping energy
 tm = sqrt(t)
-dim = 2
+dim = 1
 
 # numerical parameters
 ga = 1.0
@@ -160,7 +160,7 @@ def gamma_e(energy):
 
 
 def gamma_c(energy):
-    gam = gen_hyb(dim, tm, tl, 0, 10000, 300, 1000)
+    gam = gen_hyb(dim, tm, tl, 0, 1000, 300, 1000)
     y = zeros(len(energy))
     for i in range(len(energy)):
         if min(gam[0]) < energy[i] < max(gam[0]):
@@ -171,9 +171,9 @@ def gamma_c(energy):
     return y
 
 
-# F = gen_hyb(2, 1, 1, -1, 1000, 100, 1000)
+F = gen_hyb(1, 100, 10, 0, 1000, 300, 1000)
 plt.plot(w, gamma(w), label="1D")
-# plt.plot(F[0], F[1], label="1D")
+plt.plot(F[0], F[1], label="1Dg")
 plt.plot(w, gamma_c(w), label="cal")
 
 plt.legend()

@@ -5,21 +5,28 @@ from pathlib import Path
 lamb = 0.0001  # remember to update
 t_l = 1
 t_m = 1
-u = 8
+u = 1
 dim = 1
-T = 0.1
+T = 1
+t_max = 10
+t = linspace(0, t_max, 20 * 10 + 1)
 
 
-def openfile(h, v, T):
+def openfile(h, v, T, t_max, name, alg):
+    print(
+        '/home/ido/wolfgang/' + alg + '/' + alg + '_T' + str(T) + '_d_lamb' + str(lamb) + '_dim' + str(dim) + '_t_l' +
+        str(t_l) + '_t_m' + str(t_m) + '_t_max' + str(t_max) + '_u' + str(u) + '/h' + str(h) + '_v' + str(v) + '/' +
+        name + '.npy')
     my_file = Path(
-        '/home/ido/gcohenlab/nca/nca_T' + str(T) + '_d_lamb' + str(lamb) + '_dim' + str(dim) + '_t_l' + str(
-            t_l) + '_t_m'
-        + str(t_m) + '_u' + str(u) + '/h' + str(h) + '_v' + str(v) + '/NCA_GF v=' + str(v) + 'h=' + str(h) + '.out')
+        '/home/ido/wolfgang/' + alg + '/' + alg + '_T' + str(T) + '_d_lamb' + str(lamb) + '_dim' + str(dim) + '_t_l' +
+        str(t_l) + '_t_m' + str(t_m) + '_t_max' + str(t_max) + '_u' + str(u) + '/h' + str(h) + '_v' + str(v) + '/' +
+        name + '.npy')
     if my_file.is_file():
-        L = loadtxt(
-            '/home/ido/gcohenlab/nca/nca_T' + str(T) + '_d_lamb' + str(lamb) + '_dim' + str(dim) + '_t_l' + str(
-                t_l) + '_t_m'
-            + str(t_m) + '_u' + str(u) + '/h' + str(h) + '_v' + str(v) + '/NCA_GF v=' + str(v) + 'h=' + str(h) + '.out')
+        L = load(
+            '/home/ido/wolfgang/' + alg + '/' + alg + '_T' + str(T) + '_d_lamb' + str(lamb) + '_dim' + str(
+                dim) + '_t_l' +
+            str(t_l) + '_t_m' + str(t_m) + '_t_max' + str(t_max) + '_u' + str(u) + '/h' + str(h) + '_v' + str(v) + '/' +
+            name + '.npy')
         return L, 1
     else:
         print("no file" + str(h) + str(v))
@@ -92,34 +99,29 @@ def get_noise_tag(z):
     return S
 
 
-V = around(arange(0, 6.2, 0.2), 1)
-H = arange(0, 5.25, 0.25)
-C = zeros((len(V), len(H)))
-N = copy(C)
-dC = copy(C)
-ddC = copy(C)
-dN = copy(C)
-NT = copy(C)
-
+V = around(arange(2, 2.1, 0.1), 1)
+H = around(arange(2, 2.1, 0.1), 1)
+I = zeros((3, len(V), len(H)))
+p1 = copy(I)
+colors = ['b', 'm', 'r', 'g']
 i = 0
 for v in V:
     j = 0
     for h in H:
-        Z = openfile(h, v, T)
-        if Z[1] == 1:
-            C[i, j] = average(get_current(Z[0])[-3:])
-            N[i, j] = average(get_noise(Z[0])[-3:])
-            NT[i, j] = average(get_noise_tag(Z[0])[-3:])
-            print(h, v)
-        j += 1
+        R1 = openfile(h, v, T, t_max, 'z_nca_0', 'compare')[0]
+        R2 = openfile(h, v, T, t_max, 'z_p_nca_0', 'compare')[0]
+        R3 = openfile(h, v, T, t_max, 'z_qme_0', 'compare')[0]
+        for s in range(4):
+            print((R2[s]))
+            plt.plot(t, R1[s], color=colors[s], label='NCA')
+            plt.plot(t, R2[s], '--', color=colors[s], label='P_NCA')
+            # plt.plot(t, R3[s], ':', color=colors[s], label='QME')
+        plt.legend()
+        plt.show()
+
     i += 1
 
-save('/home/ido/gcohenlab/nca/nca_T' + str(T) + '_d_lamb' + str(lamb) + '_dim' + str(dim) + '_t_l' +
-     str(t_l) + '_t_m' + str(t_m) + '_u' + str(u) + '/I_map_tl_' + str(t_l) + 'tm_' + str(t_m) + '.out',
-     C)
-save('/home/ido/gcohenlab/nca/nca_T' + str(T) + '_d_lamb' + str(lamb) + '_dim' + str(dim) + '_t_l' +
-     str(t_l) + '_t_m' + str(t_m) + '_u' + str(u) + '/noise_map_tl_' + str(t_l) + 'tm_' + str(t_m) + '.out',
-     N)
-save('/home/ido/gcohenlab/nca/nca_T' + str(T) + '_d_lamb' + str(lamb) + '_dim' + str(dim) + '_t_l' +
-     str(t_l) + '_t_m' + str(t_m) + '_u' + str(u) + '/noise2_map_tl_' + str(t_l) + 'tm_' + str(t_m) + '.out',
-     NT)
+for u in range(3):
+    plt.imshow(I[u])
+    plt.colorbar()
+    plt.show()
